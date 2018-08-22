@@ -9,18 +9,19 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 
-redditObj = praw.Reddit(client_id='PERSONAL_USE_SCRIPT_14_CHARS', \
-                     client_secret='SECRET_KEY_27_CHARS ', \
+redditObj = praw.Reddit(client_id='9wHjRUw5P54JpA', \
+                     client_secret='SYx98S03esOePq05LGLwcLcxf50', \
                      user_agent='financeScraper', \
                      username='financeScraperBot', \
                      password='botSCRAPERfinance')
 
 personalFinance = redditObj.subreddit('personalfinance')
-finance = redditObj.subreddit('finance')
 
-houseAffordability = personalFinance.search("afford", "house", "home")
+houseAffordability = personalFinance.search("afford house")
 houseAffordabilityTitles = []
+
 for post in houseAffordability:
     houseAffordabilityTitles.append(post.title)
 
 houseAffordabilityDF = pd.dataFrame(houseAffordabilityTitles)
+pd.head();
