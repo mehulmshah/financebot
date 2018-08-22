@@ -23,5 +23,5 @@ houseAffordabilityTitles = []
 for post in houseAffordability:
     houseAffordabilityTitles.append(post.title)
 
-houseAffordabilityDF = pd.dataFrame(houseAffordabilityTitles)
-pd.head();
+houseAffordabilityDF = pd.DataFrame(houseAffordabilityTitles)
+houseAffordabilityDF.head([5]);
