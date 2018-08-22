@@ -15,13 +15,8 @@ redditObj = praw.Reddit(client_id='9wHjRUw5P54JpA', \
                      username='financeScraperBot', \
                      password='botSCRAPERfinance')
 
-personalFinance = redditObj.subreddit('personalfinance')
-
-houseAffordability = personalFinance.search("afford house")
 houseAffordabilityTitles = []
-
-for post in houseAffordability:
+for post in redditObj.subreddit('personalfinance').search('flair:"housing" afford house',limit=None):
     houseAffordabilityTitles.append(post.title)
 
-houseAffordabilityDF = pd.DataFrame(houseAffordabilityTitles)
-houseAffordabilityDF.head([5]);
+print(len(houseAffordabilityTitles))
