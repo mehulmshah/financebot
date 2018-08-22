@@ -6,8 +6,8 @@
 
 import praw
 import pandas as pd
-import numpy as np
-import datetime as dt
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.decomposition import NMF, LatentDirichletAllocation
 
 redditObj = praw.Reddit(client_id='9wHjRUw5P54JpA', \
                      client_secret='SYx98S03esOePq05LGLwcLcxf50', \
