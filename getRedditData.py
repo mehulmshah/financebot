@@ -15,8 +15,10 @@ redditObj = praw.Reddit(client_id='9wHjRUw5P54JpA', \
                      username='financeScraperBot', \
                      password='botSCRAPERfinance')
 
+houseAffordabilityQueries = ['afford house', 'can I buy a house']
 houseAffordabilityTitles = []
-for post in redditObj.subreddit('personalfinance').search('flair:"housing" afford house',limit=None):
-    houseAffordabilityTitles.append(post.title)
+for query in houseAffordabilityQueries:
+    for post in redditObj.subreddit('personalfinance').search('flair:"housing" ' + query,limit=None):
+        houseAffordabilityTitles.append(post.title)
 
 print(len(houseAffordabilityTitles))
