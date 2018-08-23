@@ -7,7 +7,7 @@ import praw
 
 def getData(redditObj, flair, queryList):
     titles = []
-    for query in queries:
+    for query in queryList:
         for post in redditObj.subreddit('personalfinance').search('flair:"{}" {}'.format(flair, query),limit=None):
             titles.append(post.title)
 
