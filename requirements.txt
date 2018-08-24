@@ -1,0 +1,5 @@
+Tensorflow>1.0.0
+TFLearn
+Nltk
+Numpy
+H5py

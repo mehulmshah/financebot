@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# chatbot.py
+# trainModel.py
 # This file will load the conversational framework for the chatbot, and train
 # a model in Tensorflow to recognize what category a user request is in.
 
@@ -13,7 +13,7 @@ import random
 import json
 import pickle
 
-with open('src/data/intents.json') as f:
+with open('src/data/conversation.json') as f:
     intents = json.load(f)
 
 intents['categorySet'][0]['trainData'] = getBalanceData()
@@ -64,5 +64,5 @@ model = tflearn.DNN(net, tensorboard_dir='logs')
 
 print('fitting model to training data...')
 model.fit(train_x, train_y, n_epoch=250, batch_size=10, show_metric=True)
-model.save('model')
-pickle.dump({'words':words, 'categories':categories, 'train_x':train_x, 'train_y':train_y},open('training_data','wb'))
+model.save('logs/model')
+pickle.dump({'words':words, 'categories':categories, 'train_x':train_x, 'train_y':train_y},open('src/data/training_data','wb'))

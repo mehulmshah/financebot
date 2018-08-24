@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+# chatbot.py
+# This file contains the main flow for the actual system. The trained model
+# is loaded and functionality of the chatbot is set. Then the user can converse
+# with the chatbot.
+
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
 import numpy as np
@@ -15,7 +21,7 @@ train_y = data['train_y']
 ERROR_THRESHOLD = 0.5
 
 # import our chat-bot intents file
-with open('src/data/intents.json') as f:
+with open('src/data/conversation.json') as f:
     intents = json.load(f)
 
 net = tflearn.input_data(shape=[None, len(train_x[0])])
@@ -77,6 +83,7 @@ def response(sentence, userID='123', debug=False):
                     if debug: print ('category:', i['category'])
                     # a random response from the intent
                     return print('\033[94m' + random.choice(i['responseSet']) + '\033[0m')
+
 
 def main():
     output = [('temp','temp')]

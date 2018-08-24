@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/mshah02/Desktop/financebot/logs/model"
+all_model_checkpoint_paths: "/Users/mshah02/Desktop/financebot/logs/model"
