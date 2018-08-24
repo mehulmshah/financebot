@@ -55,6 +55,7 @@ train_x = list(trainingSet[:,0])
 train_y = list(trainingSet[:,1])
 
 print('creating neural net w/ tensorflow...')
+tf.reset_default_graph()
 net = tflearn.input_data(shape=[None, len(train_x[0])])
 net = tflearn.fully_connected(net, 10)
 net = tflearn.fully_connected(net, 10)
