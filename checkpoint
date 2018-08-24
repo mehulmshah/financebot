@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/mehulshah/Desktop/financebot/model.tflearn"
+all_model_checkpoint_paths: "/Users/mehulshah/Desktop/financebot/model.tflearn"
