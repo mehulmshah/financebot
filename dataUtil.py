@@ -12,7 +12,7 @@ def getTrainData():
     # PRAW docs: https://praw.readthedocs.io/en/latest/code_overview/reddit_instance.html
     balanceFileName = 'checkBalanceData.txt'
     housingDict = {'flair':'housing','queries':['afford house', 'can I buy a house']}
-    budgetingDict = {'flair':'budgeting','queries':['how much can I save', 'how much can I budget']}
+    budgetingDict = {'flair':'budgeting','queries':['what is my budget', 'how much can I budget']}
     redditObj = praw.Reddit(client_id='9wHjRUw5P54JpA', \
                          client_secret='SYx98S03esOePq05LGLwcLcxf50', \
                          user_agent='financeScraper', \
