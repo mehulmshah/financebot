@@ -1,0 +1,5 @@
+- ~~Categorize~~
+- POS Tagging
+- Conversational Flow
+- Continue conversation
+- Respond intelligently
