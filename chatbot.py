@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # chatbot.py
-# This file will load the conversational framework for the chatbot, and train it
-# to categorize and answer questions
+# This file will load the conversational framework for the chatbot, and train
+# a model in TF to recognize what category a user request is in.
 
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
@@ -24,8 +24,6 @@ intents['intents'][3]['patterns'] = getHousingData()
 words = []
 classes = []
 documents = []
-ignore_words = ['?','!']
-# loop through each sentence in our intents patterns
 
 for intent in intents['intents']:
     for pattern in intent['patterns']:
