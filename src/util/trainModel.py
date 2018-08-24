@@ -11,6 +11,7 @@ import tflearn
 import tensorflow as tf
 import random
 import json
+import pickle
 
 with open('src/data/intents.json') as f:
     intents = json.load(f)
@@ -57,15 +58,11 @@ print('creating neural net w/ tensorflow...')
 net = tflearn.input_data(shape=[None, len(train_x[0])])
 net = tflearn.fully_connected(net, 10)
 net = tflearn.fully_connected(net, 10)
-net = tflearn.fully_connected(net, 10)
 net = tflearn.fully_connected(net, len(train_y[0]), activation='softmax')
 net = tflearn.regression(net)
 model = tflearn.DNN(net, tensorboard_dir='logs')
 
 print('fitting model to training data...')
-model.fit(train_x, train_y, n_epoch=200, batch_size=10, show_metric=True)
+model.fit(train_x, train_y, n_epoch=250, batch_size=10, show_metric=True)
 model.save('model')
-
-# save all of our data structures
-import pickle
-pickle.dump( {'words':words, 'classes':classes, 'train_x':train_x, 'train_y':train_y}, open( "training_data", "wb" ) )
+pickle.dump({'words':words, 'categories':categories, 'train_x':train_x, 'train_y':train_y},open('training_data','wb'))
