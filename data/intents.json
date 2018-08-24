@@ -1,0 +1,34 @@
+{"intents": [
+		{"topic": "balance",
+	 	 "responseSet": ["Which account are you referring to?", "Let me see... your account balance is "],
+	 	 "context_set": ""
+		},
+		{"topic": "budgeting",
+	 	 "responseSet": ["Let me see... you can save ", "Hmm... you should try to spend under ", "Excluding savings accounts, you have "],
+	 	 "context_set": ""
+		},
+		{"topic": "affordability",
+	 	 "responseSet": ["You can afford it!", "Hmm... how much does it cost?", "You can't afford that with your current finances", "Going by my current info, you can afford this place in "],
+	 	 "context_set": ""
+		},
+		{"topic": "unknown",
+	 	 "responseSet": ["Sorry, I did not understand that. Can you try re-phrasing?", "I'm still in v0.1, I don't think I can help with that..."],
+	 	 "context_set": ""
+		},
+		{"topic": "greeting",
+	 	 "patterns": ["Hello", "Hi", "Hey", "How are you", "Is this on"],
+	 	 "responseSet": ["Hello, and welcome Clerkie V0.1", "Nice to see you again", "Hi, ask me a question to get started!"],
+	 	 "context_set": ""
+		},
+		{"topic": "name",
+	 	 "patterns": ["Who are you?", "What's your name?", "Tell me more about you"],
+	 	 "responseSet": ["I'm Summers!", "I'm your guide to your personal finances", "I'm a robot. Beep boop."],
+	 	 "context_set": ""
+		},
+		{"topic": "exit",
+	 	 "patterns": ["Bye", "Goodbye", "Later!"],
+	 	 "responseSet": ["Goodbye, hope to see you soon!", "Bye, thanks for chatting"],
+	 	 "context_set": ""
+		}
+	]
+}
