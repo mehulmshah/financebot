@@ -19,7 +19,7 @@ words = data['words']
 categories = data['categories']
 train_x = data['train_x']
 train_y = data['train_y']
-ERROR_THRESHOLD = 0.80
+ERROR_THRESHOLD = 0.95
 # import our chat-bot intents file
 with open('src/data/conversation.json') as f:
     intents = json.load(f)
@@ -40,7 +40,7 @@ def clean_up_sentence(sentence):
     sentence_words = [stemmer.stem(word.lower()) for word in sentence_words]
     return sentence_words
 
-def bagOfWords(sentence, words, debug=True):
+def bagOfWords(sentence, words, debug=False):
     # tokenize the pattern
     sentence_words = clean_up_sentence(sentence)
     # bag of words
@@ -71,11 +71,10 @@ def response(sentence, debug=True):
     if results:
         for cat in intents['categorySet']:
             if cat['category'] == results[0][0]:
-                botResponse = random.choice(cat['responseSet'])
-                #if i['category'] == 'balance' or i['category'] == 'budgeting' or i['category'] == 'housing':
-                    #botResponse = conversationFlow(sentence)
-                #else:
-                    #botResponse = random.choice(i['responseSet'])
+                if cat['category'] == 'balance' or cat['category'] == 'budgeting' or cat['category'] == 'housing':
+                    botResponse = conversationFlow(cat['category'], sentence)
+                else:
+                    botResponse = random.choice(cat['responseSet'])
     else:
         botResponse = unknownFlow()
 

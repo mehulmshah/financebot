@@ -33,7 +33,7 @@ BANK_ACCOUNTS = {'boa':{
 with open('src/data/conversation.json') as f:
     intents = json.load(f)
 
-def conversationFlow(userRequest):
+def conversationFlow(category, userRequest):
     words = word_tokenize(userRequest.lower().replace('bank of america','boa'))
     POS = pos_tag(words)
     if category == 'balance':
@@ -46,22 +46,22 @@ def conversationFlow(userRequest):
 
 def balanceFlow(words, POS):
     bank = account = ""
-    if 'boa' in words: bank = 'boa'
+    if 'boa' in words:
+        bank = 'boa'
     elif 'chase' in words:
         bank = 'chase'
         account = 'savings'
     if 'checking' in words:
         account = 'checking'
         bank = 'boa'
-    if 'savings' in words: account = 'savings'
-
+    if 'savings' in words:
+        account = 'savings'
     while not bank or not account:
-        if bank:
-            account = input('\033[94m' + intents['categorySet'][0]['responseSet']['whichAccount'] + '\033[0m'))
-        if account:
-            bank = input('\033[94m' + intents['categorySet'][0]['responseSet']['whichBank'] + '\033[0m')).lower()
-
-    return intents['categorySet'][0]['responseSet']['balance'].format(BANK_ACCOUNTS[bank][account]
+        if bank and not account:
+            account = input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichAccount'] + '\033[0m\n--> ')
+        if account and not bank:
+            bank = input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichBank'] + '\033[0m\n--> ').lower()
+    return intents['categorySet'][0]['responseSet'][0]['balance'].format(BANK_ACCOUNTS[bank][account]['balance'])
 
 def budgetingFlow(words, POS):
     print('c')
@@ -69,5 +69,5 @@ def budgetingFlow(words, POS):
 def housingFlow(words, POS):
     print('l')
 
-def unknownFlow(userRequest):
+def unknownFlow():
     return random.choice(intents['categorySet'][3]['responseSet'])
