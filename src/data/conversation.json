@@ -1,38 +1,38 @@
 {"categorySet": [
 		{"category": "balance",
 		 "trainData": [""],
-	 	 "responseSet": [{"whichAccount":"Which account are you referring to?","balance":"your balance is {}", "whichBank":"Which bank are you referring to?"}],
-		 "context": false
+	 	 "responseSet": [{"whichAccount":"Which account, checking or savings?","whichBank":"Which bank, BoA or Chase?","balance":"Your balance is ${}"}],
+		 "context": ""
 		},
 		{"category": "budgeting",
 		 "trainData": [""],
 	 	 "responseSet": [{"balanceLeft":"You have {} left for the month!","possibleSavings":"You can save up to {} per month!"}],
-		 "context": false
+		 "context": ""
 		},
 		{"category": "housing",
 		 "trainData": [""],
 	 	 "responseSet": [{"yes": "You can!", "no": "Unfortunately that just isn't realistic with your current personal equity", "inXyears":"You can afford this in {} years."}],
-		 "context": false
+		 "context": ""
 		},
 		{"category": "unknown",
 		 "trainData": [""],
 	 	 "responseSet": ["Sorry, I did not understand that. Can you try re-phrasing?", "I'm still in v0.1, I don't think I can help with that..."],
-		 "context": false
+		 "context": ""
 		},
 		{"category": "greeting",
 	 	 "trainData": ["Hello", "Hi", "Hey", "How are you", "Is this on"],
 	 	 "responseSet": ["Hello, and welcome Clerkie V0.1", "Nice to see you again", "Hi, ask me a question to get started!"],
-		 "context": false
+		 "context": ""
 		},
 		{"category": "name",
 	 	 "trainData": ["Who are you?", "What's your name?", "Tell me more about you"],
 	 	 "responseSet": ["I'm Summers!", "I'm your guide to your personal finances", "I'm a robot. Beep boop."],
-		 "context": false
+		 "context": ""
 		},
 		{"category": "exit",
 	 	 "trainData": ["Bye", "Goodbye", "Later!"],
 	 	 "responseSet": ["Goodbye, hope to see you soon!", "Bye, thanks for chatting"],
-		 "context": false
+		 "context": ""
 		}
 	]
 }

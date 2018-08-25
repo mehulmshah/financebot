@@ -40,7 +40,7 @@ def clean_up_sentence(sentence):
     sentence_words = [stemmer.stem(word.lower()) for word in sentence_words]
     return sentence_words
 
-def bagOfWords(sentence, words, debug=False):
+def bagOfWords(sentence, words, debug=True):
     # tokenize the pattern
     sentence_words = clean_up_sentence(sentence)
     # bag of words
@@ -66,15 +66,16 @@ def classify(sentence):
     return return_list
 
 
-def response(sentence, debug=False):
+def response(sentence, debug=True):
     results = classify(sentence)
     if results:
-        for i in intents['categorySet']:
-            if i['category'] == results[0][0]:
-                if i['category'] == 'balance' or i['category'] == 'budgeting' or i['category'] == 'housing'
-                    botResponse = conversationFlow(i['category'], sentence)
-                else:
-                    botResponse = random.choice(i['responseSet'])
+        for cat in intents['categorySet']:
+            if cat['category'] == results[0][0]:
+                botResponse = random.choice(cat['responseSet'])
+                #if i['category'] == 'balance' or i['category'] == 'budgeting' or i['category'] == 'housing':
+                    #botResponse = conversationFlow(sentence)
+                #else:
+                    #botResponse = random.choice(i['responseSet'])
     else:
         botResponse = unknownFlow()
 
