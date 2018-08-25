@@ -5,7 +5,7 @@
 
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
-from util.dataUtil import getBalanceData, getBudgetingData, getHousingData
+from util.dataUtil import getBalanceData, getBudgetingData, getHousingData, getUnknownData
 import numpy as np
 import tflearn
 import tensorflow as tf

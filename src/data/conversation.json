@@ -1,38 +1,38 @@
 {"categorySet": [
 		{"category": "balance",
 		 "trainData": [""],
-	 	 "responseSet": ["Which account are you referring to?", "Let me see... your account balance is "],
-	 	 "contextSet": [""]
+	 	 "responseSet": [{"whichAccount":"Which account are you referring to?","balance":"your balance is {}", "whichBank":"Which bank are you referring to?"}],
+		 "context": false
 		},
 		{"category": "budgeting",
 		 "trainData": [""],
-	 	 "responseSet": ["Let me see... you can save ", "Hmm... you should try to spend under ", "Excluding savings accounts, you have "],
-	 	 "contextSet": [""]
+	 	 "responseSet": [{"balanceLeft":"You have {} left for the month!","possibleSavings":"You can save up to {} per month!"}],
+		 "context": false
 		},
-		{"category": "affordability",
+		{"category": "housing",
 		 "trainData": [""],
-	 	 "responseSet": ["You can afford it!", "Hmm... how much does it cost?", "You can't afford that with your current finances", "Going by my current info, you can afford this place in "],
-	 	 "contextSet": [""]
+	 	 "responseSet": [{"yes": "You can!", "no": "Unfortunately that just isn't realistic with your current personal equity", "inXyears":"You can afford this in {} years."}],
+		 "context": false
 		},
 		{"category": "unknown",
 		 "trainData": [""],
 	 	 "responseSet": ["Sorry, I did not understand that. Can you try re-phrasing?", "I'm still in v0.1, I don't think I can help with that..."],
-	 	 "contextSet": [""]
+		 "context": false
 		},
 		{"category": "greeting",
 	 	 "trainData": ["Hello", "Hi", "Hey", "How are you", "Is this on"],
 	 	 "responseSet": ["Hello, and welcome Clerkie V0.1", "Nice to see you again", "Hi, ask me a question to get started!"],
-	 	 "contextSet": [""]
+		 "context": false
 		},
 		{"category": "name",
 	 	 "trainData": ["Who are you?", "What's your name?", "Tell me more about you"],
 	 	 "responseSet": ["I'm Summers!", "I'm your guide to your personal finances", "I'm a robot. Beep boop."],
-	 	 "contextSet": [""]
+		 "context": false
 		},
 		{"category": "exit",
 	 	 "trainData": ["Bye", "Goodbye", "Later!"],
 	 	 "responseSet": ["Goodbye, hope to see you soon!", "Bye, thanks for chatting"],
-	 	 "contextSet": [""]
+		 "context": false
 		}
 	]
 }

@@ -6,6 +6,7 @@
 
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
+from util.responseUtil import conversationFlow, unknownFlow
 import numpy as np
 import tflearn
 import tensorflow as tf
@@ -18,8 +19,7 @@ words = data['words']
 categories = data['categories']
 train_x = data['train_x']
 train_y = data['train_y']
-ERROR_THRESHOLD = 0.5
-
+ERROR_THRESHOLD = 0.80
 # import our chat-bot intents file
 with open('src/data/conversation.json') as f:
     intents = json.load(f)
@@ -61,28 +61,24 @@ def classify(sentence):
     # sort by strength of probability
     results.sort(key=lambda x: x[1], reverse=True)
     return_list = []
-    for r in results:
-        return_list.append((categories[r[0]], r[1]))
+    return_list.append((categories[results[0][0]], results[0][1]))
     # return tuple of intent and probability
     return return_list
 
-context = {}
-def response(sentence, userID='123', debug=False):
+
+def response(sentence, debug=False):
     results = classify(sentence)
     if results:
         for i in intents['categorySet']:
             if i['category'] == results[0][0]:
-                # set context for this intent if necessary
-                if 'context_set' in i:
-                    if debug: print ('context:', i['context_set'])
-                    context[userID] = i['context_set']
-                # check if this intent is contextual and applies to this user's conversation
-                if not 'context_filter' in i or \
-                    (userID in context and 'context_filter' in i and i['context_filter'] == context[userID]):
-                    if debug: print ('category:', i['category'])
-                    # a random response from the intent
-                    return print('\033[94m' + random.choice(i['responseSet']) + '\033[0m')
+                if i['category'] == 'balance' or i['category'] == 'budgeting' or i['category'] == 'housing'
+                    botResponse = conversationFlow(i['category'], sentence)
+                else:
+                    botResponse = random.choice(i['responseSet'])
+    else:
+        botResponse = unknownFlow()
 
+    return print('\033[94m' + botResponse + '\033[0m')
 
 def main():
     output = [('temp','temp')]
