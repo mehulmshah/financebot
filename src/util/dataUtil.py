@@ -14,6 +14,10 @@ redditObj = praw.Reddit(client_id='9wHjRUw5P54JpA', \
                      username='financeScraperBot', \
                      password='botSCRAPERfinance')
 
+queryDict = {'budgetingDict': {'flair':'budgeting','queries':['what is my budget', 'how much can I budget']},
+             'housingDict': {'flair':'housing','queries':['afford house', 'can I buy a house']},
+             'entityDict': {'queries':['boa', 'Chase']}
+            }
 BALANCE_DATA_PATH = 'src/data/checkBalanceData.txt'
 
 def getBalanceData():
@@ -23,22 +27,29 @@ def getBalanceData():
     return balanceData
 
 def getBudgetingData():
-    budgetingDict = {'flair':'budgeting','queries':['what is my budget', 'how much can I budget']}
-    budgetingData = getRedditData(redditObj, budgetingDict['flair'], budgetingDict['queries'])
+    budgetingData = getRedditData(queryDict['budgetingDict']['flair'], queryDict['budgetingDict']['queries'])
     return budgetingData
 
 def getHousingData():
-    housingDict = {'flair':'housing','queries':['afford house', 'can I buy a house']}
-    housingData = getRedditData(redditObj, housingDict['flair'], housingDict['queries'])
+    housingData = getRedditData(queryDict['housingDict']['flair'], queryDict['housingDict']['queries'])
     return housingData
 
 def getTrainData():
     return getBalanceData() + getHousingData() + getBudgetingData()
 
-def getRedditData(redditObj, flair, queryList):
+def getRedditData(flair, queryList):
     titles = []
     for query in queryList:
         for post in redditObj.subreddit('personalfinance').search('flair:"{}" {}'.format(flair, query),limit=None):
+            titles.append(post.title)
+
+    return titles
+
+def getEntityData(limit):
+    titles = []
+    queryList = queryDict['entityDict']['queries']
+    for query in queryList:
+        for post in redditObj.subreddit('personalfinance').search('{}'.format(query),limit=limit):
             titles.append(post.title)
 
     return titles
