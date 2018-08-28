@@ -60,7 +60,11 @@ def balanceFlow(word_tokens):
         account = input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichAccount'] + '\033[0m\n--> ')
     while not bank:
         bank = getBank(input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichBank'] + '\033[0m\n--> ').split())
-    return intents['categorySet'][0]['responseSet'][0]['balance'].format(bank, account, BANK_ACCOUNTS[bank.lower()][account]['balance'])
+
+    if bank == 'chase' and account == 'checking':
+        return "You don't have a checking account with Chase."
+    else:
+        return intents['categorySet'][0]['responseSet'][0]['balance'].format(bank, account, BANK_ACCOUNTS[bank.lower()][account]['balance'])
 
 def budgetingFlow(word_tokens, POS):
     return (intents['categorySet'][1]['responseSet'][0] +
@@ -85,9 +89,9 @@ def getBank(word_tokens):
     print(tagged_words)
     for tag in tagged_words:
         if 'C-ORG' in tag:
-            bank = 'Chase'
+            bank = 'chase'
         elif 'B-ORG' in tag:
-            bank = 'BoA'
+            bank = 'boa'
 
     return bank
 

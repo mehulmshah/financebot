@@ -7,6 +7,7 @@
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
 from util.responseUtil import conversationFlow, unknownFlow
+import speech_recognition as sr
 import numpy as np
 import tflearn
 import tensorflow as tf
@@ -14,6 +15,8 @@ import random
 import json
 import pickle
 
+stemmer = LancasterStemmer()
+r = sr.Recognizer()
 data = pickle.load(open('src/data/training_data','rb'))
 words = data['words']
 categories = data['categories']
@@ -31,8 +34,6 @@ net = tflearn.fully_connected(net, len(train_y[0]), activation='softmax')
 net = tflearn.regression(net)
 model = tflearn.DNN(net, tensorboard_dir='logs')
 model.load('logs/model')
-
-stemmer = LancasterStemmer()
 
 def bagOfWords(sentence, words, debug=False):
     # tokenize the pattern
@@ -75,10 +76,25 @@ def response(sentence, debug=False):
 
     return print('\033[94m' + botResponse + '\033[0m')
 
+
+def getRequest(isTyping):
+    if isTyping:
+        return input('--> ')
+    else:
+        with sr.Microphone() as source:
+            print("Say something --> ")
+            audio = r.listen(source)
+
+        try:
+            print("--> " + r.recognize_google(audio))
+        except sr.UnknownValueError:
+            print("\033[94m I could not understand audio... please quit and try again via chat \033[0m")
+        return r.recognize_google(audio)
+
 def main():
-    output = [('temp','temp')]
-    while (output[0][0] != 'exit'):
-        userRequest = input('--> ')
+    isTyping = int(input("Press 0 to talk via voice, 1 to talk via chat: "))
+    while (True):
+        userRequest = getRequest(isTyping)
         output = classify(userRequest)
         if not output:
             output = [('temp','temp')]

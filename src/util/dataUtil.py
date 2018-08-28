@@ -35,7 +35,7 @@ def getBudgetingData():
 def getHousingData():
     housingData = getRedditData(queryDict['housingDict']['flair'], queryDict['housingDict']['queries'])
     return housingData[:50]
-    
+
 def getTrainData():
     return getBalanceData() + getHousingData() + getBudgetingData()
 
