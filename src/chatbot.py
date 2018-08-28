@@ -19,7 +19,7 @@ words = data['words']
 categories = data['categories']
 train_x = data['train_x']
 train_y = data['train_y']
-ERROR_THRESHOLD = 0.95
+ERROR_THRESHOLD = 0.98
 # import our chat-bot intents file
 with open('src/data/conversation.json') as f:
     intents = json.load(f)
@@ -33,19 +33,14 @@ model = tflearn.DNN(net, tensorboard_dir='logs')
 model.load('logs/model')
 
 stemmer = LancasterStemmer()
-def clean_up_sentence(sentence):
-    # tokenize the pattern
-    sentence_words = nltk.word_tokenize(sentence)
-    # stem each word
-    sentence_words = [stemmer.stem(word.lower()) for word in sentence_words]
-    return sentence_words
 
 def bagOfWords(sentence, words, debug=False):
     # tokenize the pattern
-    sentence_words = clean_up_sentence(sentence)
+    words = nltk.word_tokenize(sentence)
+    [stemmer.stem(word.lower()) for word in words]
     # bag of words
     bag = [0]*len(words)
-    for s in sentence_words:
+    for s in words:
         for i,w in enumerate(words):
             if w == s:
                 bag[i] = 1

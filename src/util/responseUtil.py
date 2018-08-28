@@ -37,14 +37,14 @@ def conversationFlow(category, userRequest):
     words = word_tokenize(userRequest.lower().replace('bank of america','boa'))
     POS = pos_tag(words)
     if category == 'balance':
-        botResponse = balanceFlow(words, POS)
+        botResponse = balanceFlow(words)
     elif category == 'budgeting':
         botResponse = budgetingFlow(words, POS)
     elif category == 'housing':
         botResponse = housingFlow(words, POS)
     return botResponse
 
-def balanceFlow(words, POS):
+def balanceFlow(words):
     bank = account = ""
     if 'boa' in words:
         bank = 'boa'
@@ -67,7 +67,11 @@ def budgetingFlow(words, POS):
     print('c')
 
 def housingFlow(words, POS):
-    print('l')
+    for index,item in enumerate(POS):
+        if 'CD' in item:
+            cost = item[0]
+
+
 
 def unknownFlow():
     return random.choice(intents['categorySet'][3]['responseSet'])
