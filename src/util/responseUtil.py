@@ -75,6 +75,7 @@ def balanceFlow(word_tokens, debug):
     if not account:
         account = input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichAccount'] + '\033[0m\n--> ')
     while not bank:
+        print(bank)
         bank = getBank(input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichBank'] + '\033[0m\n--> ').split(),debug)
 
     if bank == 'chase' and account == 'checking':
@@ -111,7 +112,7 @@ def housingFlow(word_tokens, debug):
 # Helper function using NER model to obtain Bank name from query
 def getBank(word_tokens, debug):
     bank = ""
-    st = StanfordNERTagger('src/data/bank-ner-model.ser.gz', '../stanford-ner-2018-02-27/stanford-ner.jar')
+    st = StanfordNERTagger('ner/bank-ner-model.ser.gz', 'ner/stanford-ner.jar')
     tagged_words = st.tag(word_tokens)
     if debug:
         print(tagged_words)
@@ -129,7 +130,7 @@ def getPrice(word_tokens, debug):
     multiplier = 1
     housePrice = 0
 
-    st = StanfordNERTagger('src/data/price-ner-model.ser.gz', '../stanford-ner-2018-02-27/stanford-ner.jar')
+    st = StanfordNERTagger('ner/price-ner-model.ser.gz', 'ner/stanford-ner.jar')
     tagged_words = st.tag(word_tokens)
     for tag in tagged_words:
         if 'B-PRICE' in tag:

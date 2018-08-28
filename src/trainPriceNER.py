@@ -27,4 +27,4 @@ with open(path + testfile, 'w') as f:
             f.write("%s 0\n" % word)
 
 # train Stanford NER on the train set
-subprocess.run('java -cp ../stanford-ner-2018-02-27/stanford-ner.jar edu.stanford.nlp.ie.crf.CRFClassifier -prop src/data/price.prop',shell=True)
+subprocess.run('java -cp ner/stanford-ner.jar edu.stanford.nlp.ie.crf.CRFClassifier -prop ner/price.prop',shell=True)
