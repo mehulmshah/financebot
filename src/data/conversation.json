@@ -1,14 +1,14 @@
 {"categorySet": [
 		{"category": "balance",
-		 "trainData": [""],
+		 "trainData": ["what is my bank balance?", "how much money is in my account?"],
 	 	 "responseSet": [{"whichAccount":"Which account, checking or savings?","whichBank":"Which bank, BoA or Chase?","balance":"Your balance is ${}"}]
 		},
 		{"category": "budgeting",
-		 "trainData": [""],
+		 "trainData": ["what is my budget for this month?", "how much wiggle room in my budget?"],
 	 	 "responseSet": [{"balanceLeft":"You have {} left for the month!","possibleSavings":"You can save up to {} per month!"}]
 		},
 		{"category": "housing",
-		 "trainData": [""],
+		 "trainData": ["can I afford this house?", "can I buy this $2M place?", "can I afford this home currently?"],
 	 	 "responseSet": [{"yes": "You can!", "no": "Unfortunately that just isn't realistic with your current personal equity", "inXyears":"You can afford this in {} years."}]
 		},
 		{"category": "unknown",
@@ -18,10 +18,6 @@
 		{"category": "greeting",
 	 	 "trainData": ["Hello", "Hi", "Hey", "How are you", "Is this on"],
 	 	 "responseSet": ["Hello, and welcome Clerkie V0.1", "Nice to see you again", "Hi, ask me a question to get started!"]
-		},
-		{"category": "name",
-	 	 "trainData": ["Who are you?", "What's your name?", "Tell me more about you"],
-	 	 "responseSet": ["I'm Summers!", "I'm your guide to your personal finances", "I'm a robot. Beep boop."]
 		},
 		{"category": "exit",
 	 	 "trainData": ["Bye", "Goodbye", "Later!", "Exit."],

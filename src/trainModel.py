@@ -16,9 +16,9 @@ import pickle
 with open('src/data/conversation.json') as f:
     intents = json.load(f)
 
-intents['categorySet'][0]['trainData'] = getBalanceData()
-intents['categorySet'][1]['trainData'] = getBudgetingData()
-intents['categorySet'][2]['trainData'] = getHousingData()
+intents['categorySet'][0]['trainData'] += getBalanceData()
+intents['categorySet'][1]['trainData'] += getBudgetingData()
+intents['categorySet'][2]['trainData'] += getHousingData()
 
 words = []
 categories = []
@@ -57,13 +57,13 @@ train_y = list(trainingSet[:,1])
 print('creating neural net w/ tensorflow...')
 tf.reset_default_graph()
 net = tflearn.input_data(shape=[None, len(train_x[0])])
-net = tflearn.fully_connected(net, 10)
-net = tflearn.fully_connected(net, 10)
+net = tflearn.fully_connected(net, 8)
+net = tflearn.fully_connected(net, 8)
 net = tflearn.fully_connected(net, len(train_y[0]), activation='softmax')
 net = tflearn.regression(net)
 model = tflearn.DNN(net, tensorboard_dir='logs')
 
 print('fitting model to training data...')
-model.fit(train_x, train_y, n_epoch=250, batch_size=10, show_metric=True)
+model.fit(train_x, train_y, n_epoch=300, batch_size=8, show_metric=True)
 model.save('logs/model')
 pickle.dump({'words':words, 'categories':categories, 'train_x':train_x, 'train_y':train_y},open('src/data/training_data','wb'))

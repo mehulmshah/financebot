@@ -14,8 +14,8 @@ redditObj = praw.Reddit(client_id='9wHjRUw5P54JpA', \
                      username='financeScraperBot', \
                      password='botSCRAPERfinance')
 
-queryDict = {'budgetingDict': {'flair':'budgeting','queries':['what is my budget', 'how much can I budget']},
-             'housingDict': {'flair':'housing','queries':['afford house', 'can I buy a house']},
+queryDict = {'budgetingDict': {'flair':'budgeting','queries':['what should my budget look like?', 'how much can I budget']},
+             'housingDict': {'flair':'housing','queries':['afford house', 'can I buy a home']},
              'entityDict': {'queries':['boa', 'Chase']}
             }
 BALANCE_DATA_PATH = 'src/data/checkBalanceData.txt'
@@ -23,11 +23,13 @@ BALANCE_DATA_PATH = 'src/data/checkBalanceData.txt'
 def getBalanceData():
     with open(BALANCE_DATA_PATH) as f:
         balanceData = [line.rstrip('\n') for line in f]
-
     return balanceData
 
 def getBudgetingData():
     budgetingData = getRedditData(queryDict['budgetingDict']['flair'], queryDict['budgetingDict']['queries'])
+    for post in budgetingData:
+        if 'budget' not in post or 'budgeting' not in post:
+            budgetingData.remove(post)
     return budgetingData
 
 def getHousingData():

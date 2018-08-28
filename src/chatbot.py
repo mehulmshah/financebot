@@ -36,11 +36,11 @@ stemmer = LancasterStemmer()
 
 def bagOfWords(sentence, words, debug=False):
     # tokenize the pattern
-    words = nltk.word_tokenize(sentence)
-    [stemmer.stem(word.lower()) for word in words]
+    tokenized = nltk.word_tokenize(sentence)
+    [stemmer.stem(word.lower()) for word in tokenized]
     # bag of words
     bag = [0]*len(words)
-    for s in words:
+    for s in tokenized:
         for i,w in enumerate(words):
             if w == s:
                 bag[i] = 1
@@ -48,21 +48,21 @@ def bagOfWords(sentence, words, debug=False):
                     print ("found in: %s" % w)
     return(np.array(bag))
 
-def classify(sentence):
-    # generate probabilities from the model
+def classify(sentence, debug=False):
     results = model.predict([bagOfWords(sentence, words)])[0]
-    # filter out predictions below a threshold
+    if debug:
+        print("results: {}".format(list(zip(categories, results))))
     results = [[i,r] for i,r in enumerate(results) if r>ERROR_THRESHOLD]
-    # sort by strength of probability
-    results.sort(key=lambda x: x[1], reverse=True)
+    results.sort(key=lambda x: x[1])
     return_list = []
-    return_list.append((categories[results[0][0]], results[0][1]))
+    if results:
+        return_list.append((categories[results[-1][0]], results[-1][1]))
     # return tuple of intent and probability
     return return_list
 
 
-def response(sentence, debug=True):
-    results = classify(sentence)
+def response(sentence, debug=False):
+    results = classify(sentence,debug)
     if results:
         for cat in intents['categorySet']:
             if cat['category'] == results[0][0]:
