@@ -5,27 +5,15 @@
 		},
 		{"category": "budgeting",
 		 "trainData": ["what is my budget for this month?", "how much wiggle room in my budget?"],
-	 	 "responseSet": [{"balanceLeft":"You have {} left for the month!","possibleSavings":"You can save up to {} per month!"}]
+	 	 "responseSet": ["Here is your income and expenses...\n"]
 		},
 		{"category": "housing",
 		 "trainData": ["can I afford this house?", "can I buy this $2M place?", "can I afford this home currently?"],
 	 	 "responseSet": [{"yes": "You can!", "no": "Unfortunately that just isn't realistic with your current personal equity", "inXyears":"You can afford this in {} years."}]
 		},
-		{"category": "unknown",
-		 "trainData": [""],
-	 	 "responseSet": ["Sorry, I did not understand that. Can you try re-phrasing?", "I'm still in v0.1, I don't think I can help with that..."]
-		},
-		{"category": "greeting",
-	 	 "trainData": ["Hello", "Hi", "Hey", "How are you", "Is this on"],
-	 	 "responseSet": ["Hello, and welcome Clerkie V0.1", "Nice to see you again", "Hi, ask me a question to get started!"]
-		},
 		{"category": "exit",
 	 	 "trainData": ["Bye", "Goodbye", "Later!", "Exit."],
 	 	 "responseSet": ["Goodbye, hope to see you soon!", "Bye, thanks for chatting"]
-	 	},
-		{"category": "thanks",
-	 	 "trainData": ["Thanks", "Thank you", "Thx so much!"],
-	 	 "responseSet": ["Glad to help :)", "No problem!", "Of course! That's what I'm here for."]
-		}
+	 	}
 	]
 }

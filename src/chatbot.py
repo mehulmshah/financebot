@@ -19,7 +19,7 @@ words = data['words']
 categories = data['categories']
 train_x = data['train_x']
 train_y = data['train_y']
-ERROR_THRESHOLD = 0.98
+ERROR_THRESHOLD = 0.65
 # import our chat-bot intents file
 with open('src/data/conversation.json') as f:
     intents = json.load(f)
@@ -80,6 +80,8 @@ def main():
     while (output[0][0] != 'exit'):
         userRequest = input('--> ')
         output = classify(userRequest)
+        if not output:
+            output = [('temp','temp')]
         response(userRequest, debug=True)
 
 main()

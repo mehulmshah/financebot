@@ -64,6 +64,6 @@ net = tflearn.regression(net)
 model = tflearn.DNN(net, tensorboard_dir='logs')
 
 print('fitting model to training data...')
-model.fit(train_x, train_y, n_epoch=300, batch_size=8, show_metric=True)
+model.fit(train_x, train_y, n_epoch=75, batch_size=8, show_metric=True)
 model.save('logs/model')
 pickle.dump({'words':words, 'categories':categories, 'train_x':train_x, 'train_y':train_y},open('src/data/training_data','wb'))

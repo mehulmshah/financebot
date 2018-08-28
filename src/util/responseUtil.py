@@ -6,6 +6,7 @@
 from nltk import word_tokenize, pos_tag, ne_chunk
 from nltk.tag.stanford import StanfordNERTagger
 import json
+import random
 
 PERSONAL_EQUITY = {'income':6000,
                   'rent':-3000,
@@ -52,7 +53,8 @@ def balanceFlow(word_tokens):
         bank = 'BoA'
     elif 'savings' in word_tokens:
         account = 'savings'
-        bank = getBank(word_tokens)
+
+    bank = getBank(word_tokens)
 
     if not account:
         account = input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichAccount'] + '\033[0m\n--> ')
@@ -61,17 +63,26 @@ def balanceFlow(word_tokens):
     return intents['categorySet'][0]['responseSet'][0]['balance'].format(bank, account, BANK_ACCOUNTS[bank.lower()][account]['balance'])
 
 def budgetingFlow(word_tokens, POS):
-    print('c')
+    return (intents['categorySet'][1]['responseSet'][0] +
+           "income: +{}/mo\n".format(PERSONAL_EQUITY['income']) +
+           "rent: -{}/mo\n".format(PERSONAL_EQUITY['rent']) +
+           "utilities and groceries: {}/mo\n".format(PERSONAL_EQUITY['utilGroceries']) +
+           "shopping: {}/mo\n".format(PERSONAL_EQUITY['shopping']) +
+           "dining: {}/mo\n".format(PERSONAL_EQUITY['dining']) +
+           "Remaining budget: {}/mo! (Try to put this into your savings account)".format(sum(PERSONAL_EQUITY.values())))
 
 def housingFlow(word_tokens, POS):
     for index,item in enumerate(POS):
         if 'CD' in item:
             cost = item[0]
 
+    return 'yes'
+
 def getBank(word_tokens):
     bank = ""
     st = StanfordNERTagger('src/data/bank-ner-model.ser.gz', '../stanford-ner-2018-02-27/stanford-ner.jar')
     tagged_words = st.tag(word_tokens)
+    print(tagged_words)
     for tag in tagged_words:
         if 'C-ORG' in tag:
             bank = 'Chase'
@@ -81,4 +92,5 @@ def getBank(word_tokens):
     return bank
 
 def unknownFlow():
-    return random.choice(intents['categorySet'][3]['responseSet'])
+    responseSet = ["Sorry, I did not understand that. Can you try re-phrasing?", "I'm still in v0.1, I don't think I can help with that..."]
+    return random.choice(responseSet)

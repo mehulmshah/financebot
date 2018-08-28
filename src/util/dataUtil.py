@@ -28,14 +28,14 @@ def getBalanceData():
 def getBudgetingData():
     budgetingData = getRedditData(queryDict['budgetingDict']['flair'], queryDict['budgetingDict']['queries'])
     for post in budgetingData:
-        if 'budget' not in post or 'budgeting' not in post:
+        if 'budget' not in post and 'budgeting' not in post:
             budgetingData.remove(post)
-    return budgetingData
+    return budgetingData[:50]
 
 def getHousingData():
     housingData = getRedditData(queryDict['housingDict']['flair'], queryDict['housingDict']['queries'])
-    return housingData
-
+    return housingData[:50]
+    
 def getTrainData():
     return getBalanceData() + getHousingData() + getBudgetingData()
 
