@@ -4,6 +4,7 @@
 # and a category
 
 from nltk import word_tokenize, pos_tag, ne_chunk
+from nltk.tag.stanford import StanfordNERTagger
 import json
 
 PERSONAL_EQUITY = {'income':6000,
@@ -34,44 +35,50 @@ with open('src/data/conversation.json') as f:
     intents = json.load(f)
 
 def conversationFlow(category, userRequest):
-    words = word_tokenize(userRequest.lower().replace('bank of america','boa'))
-    POS = pos_tag(words)
+    word_tokens = word_tokenize(userRequest)
+    POS = pos_tag(word_tokens)
     if category == 'balance':
-        botResponse = balanceFlow(words)
+        botResponse = balanceFlow(word_tokens)
     elif category == 'budgeting':
-        botResponse = budgetingFlow(words, POS)
+        botResponse = budgetingFlow(word_tokens, POS)
     elif category == 'housing':
-        botResponse = housingFlow(words, POS)
+        botResponse = housingFlow(word_tokens, POS)
     return botResponse
 
-def balanceFlow(words):
+def balanceFlow(word_tokens):
     bank = account = ""
-    if 'boa' in words:
-        bank = 'boa'
-    elif 'chase' in words:
-        bank = 'chase'
-        account = 'savings'
-    if 'checking' in words:
+    if 'checking' in word_tokens:
         account = 'checking'
-        bank = 'boa'
-    if 'savings' in words:
+        bank = 'BoA'
+    elif 'savings' in word_tokens:
         account = 'savings'
-    while not bank or not account:
-        if bank and not account:
-            account = input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichAccount'] + '\033[0m\n--> ')
-        if account and not bank:
-            bank = input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichBank'] + '\033[0m\n--> ').lower()
-    return intents['categorySet'][0]['responseSet'][0]['balance'].format(BANK_ACCOUNTS[bank][account]['balance'])
+        bank = getBank(word_tokens)
 
-def budgetingFlow(words, POS):
+    if not account:
+        account = input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichAccount'] + '\033[0m\n--> ')
+    while not bank:
+        bank = getBank(input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichBank'] + '\033[0m\n--> ').split())
+    return intents['categorySet'][0]['responseSet'][0]['balance'].format(bank, account, BANK_ACCOUNTS[bank.lower()][account]['balance'])
+
+def budgetingFlow(word_tokens, POS):
     print('c')
 
-def housingFlow(words, POS):
+def housingFlow(word_tokens, POS):
     for index,item in enumerate(POS):
         if 'CD' in item:
             cost = item[0]
 
+def getBank(word_tokens):
+    bank = ""
+    st = StanfordNERTagger('src/data/bank-ner-model.ser.gz', '../stanford-ner-2018-02-27/stanford-ner.jar')
+    tagged_words = st.tag(word_tokens)
+    for tag in tagged_words:
+        if 'C-ORG' in tag:
+            bank = 'Chase'
+        elif 'B-ORG' in tag:
+            bank = 'BoA'
 
+    return bank
 
 def unknownFlow():
     return random.choice(intents['categorySet'][3]['responseSet'])

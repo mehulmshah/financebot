@@ -1,7 +1,7 @@
 {"categorySet": [
 		{"category": "balance",
 		 "trainData": ["what is my bank balance?", "how much money is in my account?"],
-	 	 "responseSet": [{"whichAccount":"Which account, checking or savings?","whichBank":"Which bank, BoA or Chase?","balance":"Your balance is ${}"}]
+	 	 "responseSet": [{"whichAccount":"Which account, checking or savings?","whichBank":"I'm sorry, I didn't detect a relevant bank. Which bank, BoA or Chase?","balance":"Your {} {} account balance is ${}"}]
 		},
 		{"category": "budgeting",
 		 "trainData": ["what is my budget for this month?", "how much wiggle room in my budget?"],
