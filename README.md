@@ -19,7 +19,7 @@ crib?", etc)
 1. Clone the directory to your local computer
 2. Run `pip3 install -r requirements.txt`
 3. To simply use the chatbot, run `python3 src/chatbot.py`
-  3a. Optional bool argument `--debug` (default False)
-  3b. To exit, simply type `exit`, or press **Cmd-C**
+    * Optional bool argument `--debug` (default False)
+    * To exit, simply type `exit`, or press **Cmd-C**
 4. To train the NER models, run `python3 src/train____NER.py`
 5. To train the DNN model for categorization, run `python3 src/trainModel.py`
