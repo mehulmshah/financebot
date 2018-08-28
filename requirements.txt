@@ -1,5 +1,8 @@
 Tensorflow>1.0.0
 TFLearn
 Nltk
-Numpy
+Numpy<=1.14.5
 H5py
+SpeechRecognition
+Praw
+Scipy

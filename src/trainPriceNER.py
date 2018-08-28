@@ -9,7 +9,7 @@ import subprocess
 from util.dataUtil import getPriceData
 
 # create train and test datasets into TSVs
-path = 'data/'
+path = 'ner/'
 trainfile = 'price.tsv'
 testfile = 'priceTest.tsv'
 traindata = getPriceData(25)

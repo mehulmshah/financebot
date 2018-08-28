@@ -3,7 +3,7 @@
 # This file contains helper functions to return a bot response given a query
 # and a category
 
-from nltk import word_tokenize, pos_tag, ne_chunk
+from nltk import word_tokenize
 from nltk.tag.stanford import StanfordNERTagger
 import json
 import random

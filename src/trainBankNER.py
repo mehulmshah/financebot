@@ -9,7 +9,7 @@ import subprocess
 from util.dataUtil import getEntityData
 
 # create train and test datasets into TSVs
-path = 'src/data/'
+path = 'ner/'
 trainfile = 'entity.txt'
 testfile = 'entityTest.txt'
 traindata = getEntityData(25)
