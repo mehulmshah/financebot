@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# trainNER.py
+# trainPriceNER.py
 # This file will pull data, tokenize it, and train it using Stanford's NER
 # library. I will be manually tagging the dataset. This will be used for
-# questions involving banks (i.e BoA, Bank of America, Chase)
+# questions involving price (i.e $2.5M house, $700k, etc.)
 
 import nltk
 import subprocess
