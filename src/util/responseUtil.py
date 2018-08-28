@@ -32,18 +32,23 @@ BANK_ACCOUNTS = {'boa':{
                  'creditCard':-15000
                 }
 
+PRICE_CONVERSION = {'million': 1000000,
+                    'm': 1000000,
+                    'thousand': 1000,
+                    'k': 1000
+                   }
+
 with open('src/data/conversation.json') as f:
     intents = json.load(f)
 
 def conversationFlow(category, userRequest):
     word_tokens = word_tokenize(userRequest)
-    POS = pos_tag(word_tokens)
     if category == 'balance':
         botResponse = balanceFlow(word_tokens)
     elif category == 'budgeting':
-        botResponse = budgetingFlow(word_tokens, POS)
+        botResponse = budgetingFlow(word_tokens)
     elif category == 'housing':
-        botResponse = housingFlow(word_tokens, POS)
+        botResponse = housingFlow(word_tokens)
     return botResponse
 
 def balanceFlow(word_tokens):
@@ -66,7 +71,7 @@ def balanceFlow(word_tokens):
     else:
         return intents['categorySet'][0]['responseSet'][0]['balance'].format(bank, account, BANK_ACCOUNTS[bank.lower()][account]['balance'])
 
-def budgetingFlow(word_tokens, POS):
+def budgetingFlow(word_tokens):
     return (intents['categorySet'][1]['responseSet'][0] +
            "income: +{}/mo\n".format(PERSONAL_EQUITY['income']) +
            "rent: -{}/mo\n".format(PERSONAL_EQUITY['rent']) +
@@ -75,13 +80,21 @@ def budgetingFlow(word_tokens, POS):
            "dining: {}/mo\n".format(PERSONAL_EQUITY['dining']) +
            "Remaining budget: {}/mo! (Try to put this into your savings account)".format(sum(PERSONAL_EQUITY.values())))
 
-def housingFlow(word_tokens, POS):
-    for index,item in enumerate(POS):
-        if 'CD' in item:
-            cost = item[0]
+def housingFlow(word_tokens):
+    housePrice = getPrice(word_tokens)
+    if not housePrice:
+        housePrice = getPrice(input("I'm sorry, I didn't detect a price... how much does your dream place cost? "))
 
-    return 'yes'
+    if housePrice > 785000:
+        response = intents['categorySet'][2]['responseSet'][0]['no']
+        response += " You can put a 20% downpayment of {}.".format(.2*housePrice)
+    else:
+        response = intents['categorySet'][2]['responseSet'][0]['yes']
+        response += " That will require a 20% downpayment of {}.".format(.2*housePrice)
+        response += " At your current rate of savings (+500/mo), you can afford the downpayment in {} months!".format((.2*housePrice - 157000)/500)
 
+    return response
+    
 def getBank(word_tokens):
     bank = ""
     st = StanfordNERTagger('src/data/bank-ner-model.ser.gz', '../stanford-ner-2018-02-27/stanford-ner.jar')
@@ -94,6 +107,30 @@ def getBank(word_tokens):
             bank = 'boa'
 
     return bank
+
+def getPrice(word_tokens):
+    price = []
+    multiplier = 1
+    housePrice = 0
+
+    st = StanfordNERTagger('src/data/price-ner-model.ser.gz', '../stanford-ner-2018-02-27/stanford-ner.jar')
+    tagged_words = st.tag(word_tokens)
+    for tag in tagged_words:
+        if 'B-PRICE' in tag:
+            price.append(tag[0])
+
+    for item in price:
+        item = item.lower()
+        if '$' in item:
+            item = item.replace('$','')
+        for key in PRICE_CONVERSION:
+            if key in item:
+                multiplier = PRICE_CONVERSION[key]
+                item = item.replace(key,'')
+        if item.replace('.','',1).isdigit():
+            housePrice = float(item)
+
+    return housePrice * multiplier
 
 def unknownFlow():
     responseSet = ["Sorry, I did not understand that. Can you try re-phrasing?", "I'm still in v0.1, I don't think I can help with that..."]

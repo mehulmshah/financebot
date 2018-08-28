@@ -53,5 +53,10 @@ def getEntityData(limit):
     for query in queryList:
         for post in redditObj.subreddit('personalfinance').search('{}'.format(query),limit=limit):
             titles.append(post.title)
+    return titles
 
+def getPriceData(limit):
+    titles = []
+    for post in redditObj.subreddit('budgetnerds').hot(limit=limit):
+        titles.append(post.title)
     return titles
