@@ -1,5 +1,5 @@
 # financebot
-Creating a chatbot for an ML coding challenge. This system will be able to interact w/ a user about their basic finance questions.
+This is a financial advising chatbot. This system will be able to interact w/ a user about their basic finance questions.
 
 ## Categories
 * Check Balance (e.g., "How much do I have saved up in my account ending in
