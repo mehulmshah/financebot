@@ -9,7 +9,7 @@
 		},
 		{"category": "housing",
 		 "trainData": ["can I afford this house?", "can I buy this $2M place?", "can I afford this home currently?"],
-	 	 "responseSet": [{"yes": "You can!", "no": "Unfortunately that just isn't realistic with your current personal equity", "inXyears":"You can afford this in {} years."}]
+	 	 "responseSet": [{"yes": "You can!", "no": "Unfortunately that just isn't realistic with your current personal equity."}]
 		}
 	]
 }

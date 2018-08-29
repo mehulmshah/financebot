@@ -19,7 +19,7 @@ PERSONAL_EQUITY = {'income':6000,
                   'dining':-500}
 
 # dict containing Mary's bank account balances (should ideally be via bank apis)
-BANK_ACCOUNTS = {'boa':{
+BANK_ACCOUNTS = {'BoA':{
                         'checking':{
                                     'lastFour':9898,
                                     'balance':9000
@@ -28,7 +28,7 @@ BANK_ACCOUNTS = {'boa':{
                                     'balance':100000
                                   }
                        },
-                 'chase':{
+                 'Chase':{
                           'savings':{
                                      'lastFour':9898,
                                      'balance':80000
@@ -61,27 +61,18 @@ def conversationFlow(category, userRequest, debug):
 
 # if a balance question, obtain bank and account, and then fetch balance from dict if available
 def balanceFlow(word_tokens, debug):
-    bank = account = ""
-    # Mary only has a BoA checking account, so the bank name isn't necessary
-    if 'checking' in word_tokens:
-        account = 'checking'
-        bank = 'BoA'
-    elif 'savings' in word_tokens:
-        account = 'savings'
-
     bank = getBank(word_tokens, debug)
+    account = getAccount(word_tokens)
 
-    # Ask Mary for her account / bank if not given in query
-    if not account:
-        account = input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichAccount'] + '\033[0m\n--> ')
+    while account != 'checking' and account != 'savings':
+        account = getAccount(input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichAccount'] + '\033[0m\n--> ').split())
     while not bank:
-        print(bank)
         bank = getBank(input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichBank'] + '\033[0m\n--> ').split(),debug)
 
-    if bank == 'chase' and account == 'checking':
+    if bank == 'Chase' and account == 'checking':
         return "You don't have a checking account with Chase."
     else:
-        return intents['categorySet'][0]['responseSet'][0]['balance'].format(bank, account, BANK_ACCOUNTS[bank.lower()][account]['balance'])
+        return intents['categorySet'][0]['responseSet'][0]['balance'].format(bank, account, BANK_ACCOUNTS[bank][account]['balance'])
 
 # Function containing the budget response
 def budgetingFlow(word_tokens):
@@ -97,15 +88,15 @@ def budgetingFlow(word_tokens):
 def housingFlow(word_tokens, debug):
     housePrice = getPrice(word_tokens, debug)
     if not housePrice:
-        housePrice = getPrice(input("I'm sorry, I didn't detect a price... how much does your dream place cost? "), debug)
+        housePrice = int(input("I'm sorry, I didn't detect a price... how much does your dream place cost? ").replace('$',''))
 
     if housePrice < MAX_AFFORDABLE_PRICE:
         response = intents['categorySet'][2]['responseSet'][0]['yes']
-        response += " You can put a 20% downpayment of {}.".format(.2*housePrice)
+        response += " You can put a 20% downpayment of ${}.".format(int(.2*housePrice))
     else:
         response = intents['categorySet'][2]['responseSet'][0]['no']
-        response += " That will require a 20% downpayment of {}.".format(.2*housePrice)
-        response += " At your current rate of savings (+500/mo), you can afford the downpayment in {} months!".format((.2*housePrice - 157000)/500)
+        response += " A ${} home will require a 20% downpayment of ${}.".format(int(housePrice), int(.2*housePrice))
+        response += " At your current rate of savings ($500/mo), you can afford the downpayment in {} years!".format(int((.2*housePrice - 157000)/(500*12)))
 
     return response
 
@@ -118,12 +109,20 @@ def getBank(word_tokens, debug):
         print(tagged_words)
     for tag in tagged_words:
         if 'C-ORG' in tag:
-            bank = 'chase'
+            bank = 'Chase'
         elif 'B-ORG' in tag:
-            bank = 'boa'
+            bank = 'BoA'
 
     return bank
 
+# Helper function to extract account type from user query
+def getAccount(word_tokens):
+    if 'checking' in word_tokens:
+        return 'checking'
+    elif 'savings' in word_tokens:
+        return 'savings'
+    else:
+        return ''
 # Helper function using NER model to obtain price of house from query
 def getPrice(word_tokens, debug):
     price = []
