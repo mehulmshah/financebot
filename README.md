@@ -23,3 +23,7 @@ crib?", etc)
     * To exit, simply type `exit`, or press **Cmd-C**
 4. To train the NER models, run `python3 src/train____NER.py`
 5. To train the DNN model for categorization, run `python3 src/trainModel.py`
+
+## Demo
+
+Click [here](https://www.dropbox.com/s/pnc0p7mp4tj0sbe/D55701E8-4F0C-43BE-82B7-B893E489BD44_HQ.mp4?dl=0) to see a demo of the bot!
