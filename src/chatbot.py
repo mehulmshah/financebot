@@ -111,13 +111,13 @@ def main():
     else:
         DEBUG = False
 
-    isTyping = int(input("Press 0 to talk via voice, 1 to talk via chat: "))
+    isTyping = int(input("\nPress 0 to talk via voice, 1 to talk via chat: "))
     userRequest = getRequest(isTyping)
     while (userRequest != "exit"):
         response(userRequest, debug=DEBUG)
         userRequest = getRequest(isTyping)
 
-    print("\033[94m Bye! See you next time. \033[0m")
+    print("\033[94m Bye! See you next time. \033[0m\n")
 
 if __name__ == '__main__':
     main()

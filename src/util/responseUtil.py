@@ -78,7 +78,7 @@ def balanceFlow(word_tokens, debug):
 def budgetingFlow(word_tokens):
     return (intents['categorySet'][1]['responseSet'][0] +
            "income: +{}/mo\n".format(PERSONAL_EQUITY['income']) +
-           "rent: -{}/mo\n".format(PERSONAL_EQUITY['rent']) +
+           "rent: {}/mo\n".format(PERSONAL_EQUITY['rent']) +
            "utilities and groceries: {}/mo\n".format(PERSONAL_EQUITY['utilGroceries']) +
            "shopping: {}/mo\n".format(PERSONAL_EQUITY['shopping']) +
            "dining: {}/mo\n".format(PERSONAL_EQUITY['dining']) +

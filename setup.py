@@ -4,5 +4,5 @@ setup(
     name='ClerkieBot',
     version='0.1dev',
     packages=['src',],
-    long_description=open('README.txt').read(),
+    long_description=open('README.md').read(),
 )
