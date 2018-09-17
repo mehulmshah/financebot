@@ -1,5 +1,5 @@
 # financebot
-Creating a chatbot for an ML coding challenge. This system will be able to interact w/ a user about their basic finance questions.
+This is a financial advising chatbot. This system will be able to interact w/ a user about their basic finance questions.
 
 ## Categories
 * Check Balance (e.g., "How much do I have saved up in my account ending in
@@ -23,3 +23,7 @@ crib?", etc)
     * To exit, simply type `exit`, or press **Cmd-C**
 4. To train the NER models, run `python3 src/train____NER.py`
 5. To train the DNN model for categorization, run `python3 src/trainModel.py`
+
+## Demo
+
+Click [here](https://www.dropbox.com/s/pnc0p7mp4tj0sbe/D55701E8-4F0C-43BE-82B7-B893E489BD44_HQ.mp4?dl=0) to see a demo of the bot!
