@@ -35,9 +35,9 @@ with open('src/data/conversation.json') as f:
 # load up model from logs for prediction
 net = tflearn.input_data(shape=[None, len(train_x[0])])
 net = tflearn.fully_connected(net, 8)
-net = tflearn.fully_connected(net, 8)
+net = tflearn.dropout(net, 0.5)
 net = tflearn.fully_connected(net, len(train_y[0]), activation='softmax')
-net = tflearn.regression(net)
+net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
 model = tflearn.DNN(net, tensorboard_dir='logs')
 model.load('logs/model')
 
