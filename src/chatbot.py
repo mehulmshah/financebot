@@ -6,7 +6,7 @@
 
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
-from util.responseUtil import conversationFlow, unknownFlow
+from src.util.responseUtil import conversationFlow, unknownFlow
 import speech_recognition as sr
 import numpy as np
 import tflearn
@@ -32,15 +32,6 @@ ERROR_THRESHOLD = 0.65
 with open('src/data/conversation.json') as f:
     intents = json.load(f)
 
-# load up model from logs for prediction
-net = tflearn.input_data(shape=[None, len(train_x[0])])
-net = tflearn.fully_connected(net, 8)
-net = tflearn.dropout(net, 0.5)
-net = tflearn.fully_connected(net, len(train_y[0]), activation='softmax')
-net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
-model = tflearn.DNN(net, tensorboard_dir='logs')
-model.load('logs/model')
-
 # given a query, return an array of sentence in bag of words format
 def bagOfWords(sentence, words, debug=False):
     # tokenize the pattern
@@ -59,7 +50,7 @@ def bagOfWords(sentence, words, debug=False):
 # use DNN model to predict category for a query and return highest prob if above
 # ERROR_THRESHOLD
 def classify(sentence, debug=False):
-    results = model.predict([bagOfWords(sentence, words)])[0]
+    results = logreg.predict([bagOfWords(sentence, words)])[0]
     if debug:
         print("results: {}".format(list(zip(categories, results))))
     results = [[i,r] for i,r in enumerate(results) if r>ERROR_THRESHOLD]
@@ -83,7 +74,6 @@ def response(sentence, debug):
                     botResponse = random.choice(cat['responseSet'])
     else:
         botResponse = unknownFlow()
-
     return print('\033[94m' + botResponse + '\033[0m')
 
 # Check to see if user wishes to type or speak into mic to chat

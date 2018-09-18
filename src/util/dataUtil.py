@@ -16,7 +16,7 @@ redditObj = praw.Reddit(client_id='9wHjRUw5P54JpA', \
                      password='botSCRAPERfinance')
 
 # dict containing params for reddit searches
-queryDict = {'budgetingDict': {'flair':'budgeting','queries':['what should my budget look like?', 'how much can I budget']},
+queryDict = {'budgetingDict': {'flair':'budgeting','queries':['how much can i save']},
              'housingDict': {'flair':'housing','queries':['afford house', 'can I buy a home']},
              'entityDict': {'queries':['boa', 'Chase']}
             }
@@ -36,15 +36,12 @@ def getBudgetingData():
     for post in budgetingData:
         if 'budget' not in post and 'budgeting' not in post:
             budgetingData.remove(post)
-    return budgetingData[:50]
+    return budgetingData
 
 # scrape /r/personalfinance for posts about housing affordability
 def getHousingData():
     housingData = getRedditData(queryDict['housingDict']['flair'], queryDict['housingDict']['queries'])
-    return housingData[:50]
-
-def getTrainData():
-    return getBalanceData() + getHousingData() + getBudgetingData()
+    return housingData
 
 # helper method to actually scrape from Reddit
 def getRedditData(flair, queryList):

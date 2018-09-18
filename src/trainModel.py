@@ -5,10 +5,9 @@
 
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
-from util.dataUtil import getBalanceData, getBudgetingData, getHousingData
+from src.util.dataUtil import getBalanceData, getBudgetingData, getHousingData
 import numpy as np
-import tflearn
-import tensorflow as tf
+from sklearn import linear_model
 import random
 import json
 import pickle
@@ -51,19 +50,25 @@ for sentence in sentences:
 
 random.shuffle(trainingSet)
 trainingSet = np.array(trainingSet)
-train_x = list(trainingSet[:,0])
-train_y = list(trainingSet[:,1])
+train_x = list(trainingSet[:400,0])
+train_y = []
+for item in list(trainingSet[:400,1]):
+    train_y.append(item.index(1))
 
-print('creating neural net w/ tensorflow...')
-tf.reset_default_graph()
-net = tflearn.input_data(shape=[None, len(train_x[0])])
-net = tflearn.fully_connected(net, 8)
-net = tflearn.dropout(net, 0.5)
-net = tflearn.fully_connected(net, len(train_y[0]), activation='softmax')
-net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
-model = tflearn.DNN(net, tensorboard_dir='logs')
+test_x = list(trainingSet[401:,0])
+test_y = []
+for item in list(trainingSet[401:,1]):
+    test_y.append(item.index(1))
 
-print('fitting model to training data...')
-model.fit(train_x, train_y, n_epoch=100, batch_size=8, show_metric=True)
+logreg = linear_model.LogisticRegression(C=10)
+logreg.fit(train_x, train_y)
+z = list(logreg.predict(test_x))
+numRight = 0
+for i in range(len(z)):
+    if z[i] == test_y[i]:
+        numRight += 1
+
+print("Accuracy:", 100*numRight/len(test_y))
+
 model.save('logs/model')
 pickle.dump({'words':words, 'categories':categories, 'train_x':train_x, 'train_y':train_y},open('src/data/training_data','wb'))
