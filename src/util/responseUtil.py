@@ -4,7 +4,7 @@
 # and a category
 
 from nltk import word_tokenize
-from nltk.tag.stanford import StanfordNERTagger
+from nltk.tag import StanfordNERTagger
 import json
 import random
 
@@ -45,7 +45,7 @@ PRICE_CONVERSION = {'million': 1000000,
                    }
 
 # load up intents json
-with open('src/data/conversation.json') as f:
+with open('src/data/intents.json') as f:
     intents = json.load(f)
 
 # go to correct conversational flow submethod

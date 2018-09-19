@@ -9,6 +9,7 @@ from nltk.tag import StanfordNERTagger
 from nltk.tokenize import word_tokenize
 from src.util.dataUtil import getBalanceData, getBudgetingData, getHousingData, getNegExampleData
 from nltk.corpus import stopwords
+from pathlib import Path
 from sklearn import model_selection
 from sklearn import cross_validation
 import numpy as np
@@ -24,10 +25,19 @@ st = StanfordNERTagger('ner/english.muc.7class.distsim.crf.ser.gz', 'ner/stanfor
 with open('src/data/intents.json') as f:
     intents = json.load(f)
 
-intents['categorySet'][0]['trainData'] = getBalanceData()
-intents['categorySet'][1]['trainData'] = getBudgetingData()
-intents['categorySet'][2]['trainData'] = getHousingData()
-intents['categorySet'][3]['trainData'] = getNegExampleData()
+trainingDataPickle = Path("src/data/trainingDataPickle")
+if trainingDataPickle.is_file():
+    data = pickle.load(open('src/data/trainingDataPickle','rb'))
+    intents['categorySet'][0]['trainData'] = data['balance']
+    intents['categorySet'][1]['trainData'] = data['budgeting']
+    intents['categorySet'][2]['trainData'] = data['housing']
+    intents['categorySet'][3]['trainData'] = data['unknown']
+else:
+    intents['categorySet'][0]['trainData'] = getBalanceData()
+    intents['categorySet'][1]['trainData'] = getBudgetingData()
+    intents['categorySet'][2]['trainData'] = getHousingData()
+    intents['categorySet'][3]['trainData'] = getNegExampleData()
+    pickle.dump({'balance':intents['categorySet'][0]['trainData'], 'budgeting':intents['categorySet'][1]['trainData'], 'housing':intents['categorySet'][2]['trainData'], 'unknown':intents['categorySet'][3]['trainData']},open('src/data/trainingDataPickle','wb'))
 
 words = []
 sentences = []
@@ -64,12 +74,25 @@ dataTest, dataVal, labelTest, labelVal = cross_validation.train_test_split(dataT
 
 tf.reset_default_graph()
 net = tflearn.input_data(shape=[None, len(dataTrain[0])])
-net = tflearn.fully_connected(net, 8)
+net = tflearn.fully_connected(net, 10)
+net = tflearn.dropout(net, 0.5)
+net = tflearn.fully_connected(net, 10)
 net = tflearn.dropout(net, 0.5)
 net = tflearn.fully_connected(net, len(labelTrain[0]), activation='softmax')
 net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
 model = tflearn.DNN(net, tensorboard_dir='logs')
 
-model.fit(dataTrain, labelTrain, validation_set=(dataVal, labelVal), n_epoch=100, batch_size=8, show_metric=True, validation_batch_size=8)
+model.fit(list(dataTrain), list(labelTrain), validation_set=(list(dataVal), list(labelVal)), n_epoch=50, batch_size=10, show_metric=True, validation_batch_size=8)
 model.save('logs/model')
-pickle.dump({'words':words, 'categories':categories, 'train_x':train_x, 'train_y':train_y},open('src/data/training_data','wb'))
+
+labelPredict = model.predict(list(dataTest))
+numRight = 0
+for i in range(len(labelPredict)):
+    if labelPredict[i].argmax() == labelTest[i].index(1):
+        numRight += 1
+
+print("Accuracy:",100*numRight/len(labelPredict))
+
+processedDataPickle = Path("src/data/processedDataPickle")
+if not processedDataPickle.is_file():
+    pickle.dump({'words':words, 'categories':categories, 'dataTrain':dataTrain, 'labelTrain':labelTrain},open('src/data/processedDataPickle','wb'))
