@@ -8,9 +8,9 @@ import nltk
 from nltk.stem.lancaster import LancasterStemmer
 from nltk.tag import StanfordNERTagger
 from nltk.tokenize import word_tokenize
-from src.util.dataUtil import getBalanceData, getBudgetingData, getHousingData, getNegExampleData
+from util.dataUtil import getBalanceData, getBudgetingData, getHousingData, getNegExampleData
 from nltk.corpus import stopwords
-from src.util.responseUtil import conversationFlow, unknownFlow
+from util.responseUtil import conversationFlow, unknownFlow
 import numpy as np
 import tflearn
 import tensorflow as tf
@@ -72,16 +72,16 @@ def classify(sentence, debug=False):
 def response(sentence, debug):
     classIndex = classify(sentence,debug)
     if debug:
-        print(classIndex)
-    if not classIndex or classIndex == 3:
-        botResponse = unknownFlow()
-    else:
-        botResponse = conversationFlow(intents['categorySet'][classIndex], sentence, debug)
-    return print('\033[94m' + botResponse + '\033[0m')
+        print(categories[classIndex])
+    #if classIndex === None or classIndex == 3:
+    #    botResponse = unknownFlow()
+    #else:
+    #    botResponse = conversationFlow(intents['categorySet'][classIndex], sentence, debug)
+    #return print('\033[94m' + botResponse + '\033[0m')
 
 def validInput(request):
     while not (request and request.strip()):
-        request = input('-->')
+        request = input('--> ')
     return request
 
 # Load up chatbot and stay alive until user quits program or error is encountered
@@ -93,10 +93,10 @@ def main():
         DEBUG = args.debug
     else:
         DEBUG = False
-    userRequest = validInput(input('-->'))
+    userRequest = validInput(input('--> '))
     while (userRequest != "exit"):
         response(userRequest, debug=DEBUG)
-        userRequest = validInput(input('-->'))
+        userRequest = validInput(input('--> '))
     print("\033[94m Bye! See you next time. \033[0m\n")
 
 if __name__ == '__main__':
