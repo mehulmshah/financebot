@@ -21,8 +21,9 @@ queryDict = {'budgetingDict': {'flair':'budgeting','queries':['what should my bu
              'entityDict': {'queries':['boa', 'Chase']}
             }
 
-# path to manually annotated dataset for checking balance
+# path to manually annotated datasets
 BALANCE_DATA_PATH = 'src/data/checkBalanceData.txt'
+MORTGAGE_FAQ_PATH = 'src/data/mortgageFaqData.txt'
 
 # read in created dataset for training data for balance category
 def getBalanceData():
@@ -43,8 +44,10 @@ def getHousingData():
     housingData = getRedditData(queryDict['housingDict']['flair'], queryDict['housingDict']['queries'])
     return housingData[:50]
 
-def getTrainData():
-    return getBalanceData() + getHousingData() + getBudgetingData()
+def getMortgageFaqData():
+    with open(MORTGAGE_FAQ_PATH) as f:
+        mortgageFaqData = [line.rstrip('\n') for line in f]
+    return mortgageFaqData
 
 # helper method to actually scrape from Reddit
 def getRedditData(flair, queryList):

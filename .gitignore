@@ -1,0 +1,6 @@
+__init__*
+setup*
+README*
+.DS_Store
+requirements.txt
+runFinancebot.sh

@@ -5,13 +5,16 @@
 
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
-from util.dataUtil import getBalanceData, getBudgetingData, getHousingData
+from nltk.tag import StanfordNERTagger
+from nltk.tokenize import word_tokenize
+from src.util.dataUtil import getBalanceData, getBudgetingData, getHousingData
 import numpy as np
 import tflearn
 import tensorflow as tf
 import random
 import json
 import pickle
+
 
 with open('src/data/conversation.json') as f:
     intents = json.load(f)
@@ -36,6 +39,15 @@ for topic in intents['categorySet']:
 stemmer = LancasterStemmer()
 words = [stemmer.stem(w.lower()) for w in words if w.isalnum()]
 words = list(dict.fromkeys(words))
+
+st = StanfordNERTagger('../stanford-ner/classifiers/english.muc.7class.distsim.crf.ser.gz',
+					   '../stanford-ner/stanford-ner.jar',
+					   encoding='utf-8')
+
+text = 'What is my Chase bank account balance if 3% is $300M?'
+classified_text = st.tag(word_tokenize(text))
+print(classified_text)
+
 
 print('creating training set...')
 trainingSet = []

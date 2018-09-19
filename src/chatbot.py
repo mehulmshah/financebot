@@ -6,7 +6,9 @@
 
 import nltk
 from nltk.stem.lancaster import LancasterStemmer
-from util.responseUtil import conversationFlow, unknownFlow
+from nltk.tag import StanfordNERTagger
+from nltk.tokenize import word_tokenize
+from src.util.responseUtil import conversationFlow, unknownFlow
 import speech_recognition as sr
 import numpy as np
 import tflearn

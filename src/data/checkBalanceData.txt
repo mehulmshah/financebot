@@ -11,7 +11,7 @@ Bank balance?
 Checking balance?
 Savings balance pls?
 What's left in my bank account
-how much do I got in my bank of america
+how much do I got in my bank of america acct?
 BoA balance?
 Chase balance?
 Savings account, how much do I have left
@@ -20,7 +20,6 @@ What's in my checking right now?
 give me my bank balance please
 boa balance amount
 what amount of money is there in my accounts
-accounts balance pl0x
 what's my checking acct balance
 what is my saving acct balance
 what left in my savings??
@@ -51,4 +50,4 @@ What is the Balance on my account - checking
 what is the balance in my account - savings
 Visa savings account balance Please
 wells fargo bank balance is how much?
-Available balance in account
+Available balance in account?
