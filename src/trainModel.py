@@ -70,5 +70,5 @@ for i in range(len(z)):
 
 print("Accuracy:", 100*numRight/len(test_y))
 
-model.save('logs/model')
+pickle.dump({'model':logreg},open('src/data/model','wb'))
 pickle.dump({'words':words, 'categories':categories, 'train_x':train_x, 'train_y':train_y},open('src/data/training_data','wb'))

@@ -9,8 +9,6 @@ from nltk.stem.lancaster import LancasterStemmer
 from src.util.responseUtil import conversationFlow, unknownFlow
 import speech_recognition as sr
 import numpy as np
-import tflearn
-import tensorflow as tf
 import random
 import json
 import pickle
@@ -50,24 +48,16 @@ def bagOfWords(sentence, words, debug=False):
 # use DNN model to predict category for a query and return highest prob if above
 # ERROR_THRESHOLD
 def classify(sentence, debug=False):
-    results = logreg.predict([bagOfWords(sentence, words)])[0]
-    if debug:
-        print("results: {}".format(list(zip(categories, results))))
-    results = [[i,r] for i,r in enumerate(results) if r>ERROR_THRESHOLD]
-    results.sort(key=lambda x: x[1])
-    return_list = []
-    if results:
-        return_list.append((categories[results[-1][0]], results[-1][1]))
-    # return tuple of intent and probability
-    return return_list
+    result = logreg.predict([bagOfWords(sentence, words)])[0]
+    return result
 
 # classify a request, and then send it to responseUtil to obtain appropriate
 # response
 def response(sentence, debug):
-    results = classify(sentence,debug)
-    if results:
+    result = classify(sentence,debug)
+    if result:
         for cat in intents['categorySet']:
-            if cat['category'] == results[0][0]:
+            if cat['category'] == result:
                 if cat['category'] == 'balance' or cat['category'] == 'budgeting' or cat['category'] == 'housing':
                     botResponse = conversationFlow(cat['category'], sentence, debug)
                 else:
