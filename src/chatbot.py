@@ -18,6 +18,7 @@ import random
 import json
 import pickle
 import argparse
+import os
 
 # init objects and load in training data
 stemmer = LancasterStemmer()
@@ -27,7 +28,7 @@ categories = processedData['categories']
 dataTrain = processedData['dataTrain']
 labelTrain = processedData['labelTrain']
 
-ERROR_THRESHOLD = 80
+ERROR_THRESHOLD = 90
 
 with open('src/data/intents.json') as f:
     intents = json.load(f)
@@ -47,7 +48,8 @@ def bagOfWords(sentence, words, debug=False):
     stop_words = set(stopwords.words('english'))
     tokenized = nltk.word_tokenize(sentence)
     tokenized = [stemmer.stem(w.lower()) for w in tokenized if w.isalnum() and not w in stop_words]
-    # bag of words
+    if debug:
+        print(tokenized)
     bag = [0]*len(words)
     for toke_word in tokenized:
         for index,word in enumerate(words):
@@ -58,14 +60,14 @@ def bagOfWords(sentence, words, debug=False):
 # use DNN model to predict category for a query and return highest prob if above
 # ERROR_THRESHOLD
 def classify(sentence, debug=False):
-    results = model.predict([bagOfWords(sentence, words)])[0]
+    results = model.predict([bagOfWords(sentence, words, debug)])[0]
     results = list(np.round(100*results, 2))
     if debug:
         print("results: {}".format(list(zip(categories, results))))
     if max(results) > ERROR_THRESHOLD:
         return results.index(max(results))
     else:
-        return None
+        return 3
 
 # classify a request, and then send it to responseUtil to obtain appropriate
 # response
@@ -93,6 +95,7 @@ def main():
         DEBUG = args.debug
     else:
         DEBUG = False
+    os.system('cls' if os.name == 'nt' else 'clear')
     userRequest = validInput(input('--> '))
     while (userRequest != "exit"):
         response(userRequest, debug=DEBUG)
