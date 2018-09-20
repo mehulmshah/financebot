@@ -47,7 +47,7 @@ model.load('logs/model')
 def bagOfWords(sentence, words, debug=False):
     stop_words = set(stopwords.words('english'))
     tokenized = nltk.word_tokenize(sentence)
-    tokenized = [stemmer.stem(w.lower()) for w in tokenized if w.isalnum() and not w in stop_words]
+    tokenized = [stemmer.stem(w.lower()) for w in tokenized if w.isalnum()]# and not w in stop_words]
     if debug:
         print(tokenized)
     bag = [0]*len(words)

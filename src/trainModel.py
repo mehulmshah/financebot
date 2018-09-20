@@ -7,7 +7,7 @@ import nltk
 from nltk.stem.lancaster import LancasterStemmer
 from nltk.tag import StanfordNERTagger
 from nltk.tokenize import word_tokenize
-from src.util.dataUtil import getBalanceData, getBudgetingData, getHousingData, getNegExampleData
+from util.dataUtil import getBalanceData, getBudgetingData, getHousingData, getNegExampleData
 from nltk.corpus import stopwords
 from pathlib import Path
 from sklearn import model_selection
@@ -50,7 +50,7 @@ for category in intents['categorySet']:
         sentences.append((tokenized_sentence, category['name']))
 
 stop_words = set(stopwords.words('english'))
-words = [stemmer.stem(w.lower()) for w in words if w.isalnum() and not w in stop_words]
+words = [stemmer.stem(w.lower()) for w in words if w.isalnum()]#and not w in stop_words]
 words = list(dict.fromkeys(words))
 
 trainingSet = []
@@ -64,8 +64,8 @@ for sentence in sentences:
     output[categories.index(sentence[1])] = 1
     trainingSet.append([bagOfWords, output])
 
-classified_text = st.tag(word_tokenize(text))
-print(classified_text)
+#classified_text = st.tag(word_tokenize(text))
+#print(classified_text)
 
 random.shuffle(trainingSet)
 trainingSet = np.array(trainingSet)
@@ -94,5 +94,4 @@ for i in range(len(labelPredict)):
 print("Accuracy:",100*numRight/len(labelPredict))
 
 processedDataPickle = Path("src/data/processedDataPickle")
-if not processedDataPickle.is_file():
-    pickle.dump({'words':words, 'categories':categories, 'dataTrain':dataTrain, 'labelTrain':labelTrain},open('src/data/processedDataPickle','wb'))
+pickle.dump({'words':words, 'categories':categories, 'dataTrain':dataTrain, 'labelTrain':labelTrain},open('src/data/processedDataPickle','wb'))
