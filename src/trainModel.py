@@ -9,6 +9,8 @@ from nltk.tag import StanfordNERTagger
 from nltk.tokenize import word_tokenize
 from util.dataUtil import getBalanceData, getBudgetingData, getHousingData, getNegExampleData
 from nltk.corpus import stopwords
+import gensim
+from gensim.models import Word2Vec
 from pathlib import Path
 from sklearn import model_selection
 from sklearn import cross_validation
@@ -42,12 +44,39 @@ else:
 words = []
 sentences = []
 categories = ['balance', 'budgeting', 'housing', 'unknown']
+aggregatedData = []
+stop_words = set(stopwords.words('english'))
 
 for category in intents['categorySet']:
     for sentence in category['trainData']:
-        tokenized_sentence = word_tokenize(sentence)
-        words.extend(tokenized_sentence)
-        sentences.append((tokenized_sentence, category['name']))
+        tokens = gensim.utils.simple_preprocess(sentence)
+        tokens = [w for w in tokens if not w in stop_words]
+        aggregatedData.append(tokens)
+
+import requests
+bankResponse = requests.get(
+     'https://en.wikipedia.org/w/api.php',
+     params={
+         'action': 'query',
+         'format': 'json',
+         'titles': 'Bank_account',
+         'prop': 'extracts',
+         'explaintext': True,
+     }
+ ).json()
+page = next(iter(response['query']['pages'].values()))
+print(page['extract'])
+
+
+model = Word2Vec(aggregatedData, size=100, window=3, min_count=1, workers=4)
+model.train(aggregatedData, total_examples=len(aggregatedData), epochs=20)
+model.wv.most_similar(positive="house")
+print("\n\n")
+model.wv.most_similar(positive="account")
+print("\n\n")
+model.wv.most_similar(positive="budget")
+print("\n\n")
+model.wv.most_similar(positive="apr")
 
 stop_words = set(stopwords.words('english'))
 words = [stemmer.stem(w.lower()) for w in words if w.isalnum()]#and not w in stop_words]
