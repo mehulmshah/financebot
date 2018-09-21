@@ -4,103 +4,74 @@
 # is loaded and functionality of the chatbot is set. Then the user can converse
 # with the chatbot.
 
-import nltk
-from nltk.stem.lancaster import LancasterStemmer
-from nltk.tag import StanfordNERTagger
-from nltk.tokenize import word_tokenize
-from util.dataUtil import getBalanceData, getBudgetingData, getHousingData, getNegExampleData
-from nltk.corpus import stopwords
 from util.responseUtil import conversationFlow, unknownFlow
-import numpy as np
-import tflearn
-import tensorflow as tf
-import random
-import json
-import pickle
-import argparse
+from keras.preprocessing.sequence import pad_sequences
+from keras.models import load_model
 import os
+import pickle
 
-# init objects and load in training data
-stemmer = LancasterStemmer()
-processedData = pickle.load(open('src/data/processedDataPickle','rb'))
-words = processedData['words']
-categories = processedData['categories']
-dataTrain = processedData['dataTrain']
-labelTrain = processedData['labelTrain']
 
-ERROR_THRESHOLD = 90
+category_index = {"balance": 0, "budgeting": 1, "housing": 2}
+category_reverse_index = dict((y, x) for (x, y) in category_index.items())
 
-with open('src/data/intents.json') as f:
-    intents = json.load(f)
+THRESHOLD = 0.80
+MAX_SEQUENCE_LENGTH = 20
 
-net = tflearn.input_data(shape=[None, len(dataTrain[0])])
-net = tflearn.fully_connected(net, 10)
-net = tflearn.dropout(net, 0.5)
-net = tflearn.fully_connected(net, 10)
-net = tflearn.dropout(net, 0.5)
-net = tflearn.fully_connected(net, len(labelTrain[0]), activation='softmax')
-net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
-model = tflearn.DNN(net, tensorboard_dir='logs')
-model.load('logs/model')
+model1 = load_model('../logs/model1.h5')
+model2 = load_model('../logs/model2.h5')
+model3 = load_model('../logs/model3.h5')
+tokenDict = pickle.load(open('data/tokenizer', 'rb'))
+tokenizer = tokenDict['tokenizer']
 
-# given a query, return an array of sentence in bag of words format
-def bagOfWords(sentence, words, debug=False):
-    stop_words = set(stopwords.words('english'))
-    tokenized = nltk.word_tokenize(sentence)
-    tokenized = [stemmer.stem(w.lower()) for w in tokenized if w.isalnum()]# and not w in stop_words]
-    if debug:
-        print(tokenized)
-    bag = [0]*len(words)
-    for toke_word in tokenized:
-        for index,word in enumerate(words):
-            if word == toke_word:
-                bag[index] = 1
-    return(np.array(bag))
 
-# use DNN model to predict category for a query and return highest prob if above
-# ERROR_THRESHOLD
-def classify(sentence, debug=False):
-    results = model.predict([bagOfWords(sentence, words, debug)])[0]
-    results = list(np.round(100*results, 2))
-    if debug:
-        print("results: {}".format(list(zip(categories, results))))
-    if max(results) > ERROR_THRESHOLD:
-        return results.index(max(results))
+def classify(sentence, the_model):
+    seq = tokenizer.texts_to_sequences([sentence])
+    pad_seq = pad_sequences(seq, maxlen=MAX_SEQUENCE_LENGTH)
+    probabilities = the_model.predict(pad_seq, verbose=0)
+    probabilities = probabilities[0]
+    print("-" * 10)
+    class_name = category_reverse_index[the_model.predict_classes(pad_seq, verbose=0)[0]]
+    if max(probabilities) > THRESHOLD:
+        print("Predicted category: ", className)
     else:
-        return 3
+        class_name = "unknown"
+        print("Predicted category: Unknown")
+    print("-" * 10)
+    probabilities = the_model.predict(pad_seq, verbose=0)
+    probabilities = probabilities[0]
+    print("Balance: {}\nBudgeting: {}\nHousing: {}\n".format(probabilities[category_index["balance"]],
+                                                             probabilities[category_index["budgeting"]],
+                                                             probabilities[category_index["housing"]]))
+    return class_name
 
-# classify a request, and then send it to responseUtil to obtain appropriate
-# response
-def response(sentence, debug):
-    classIndex = classify(sentence,debug)
-    if debug:
-        print(categories[classIndex])
-    #if classIndex === None or classIndex == 3:
-    #    botResponse = unknownFlow()
-    #else:
-    #    botResponse = conversationFlow(intents['categorySet'][classIndex], sentence, debug)
-    #return print('\033[94m' + botResponse + '\033[0m')
+
+def response(sentence, the_model):
+    class_name = classify(sentence, the_model)
+
+    if class_name == "unknown":
+        botResponse = unknownFlow()
+    else:
+        botResponse = conversationFlow(class_name, sentence)
+    return print('\033[94m' + botResponse + '\033[0m')
+
 
 def validInput(request):
     while not (request and request.strip()):
         request = input('--> ')
     return request
 
+
 # Load up chatbot and stay alive until user quits program or error is encountered
 def main():
-    parser = argparse.ArgumentParser(description='Finance chatbot!')
-    parser.add_argument('--debug', type=bool, help='Toggle debug mode (default False)')
-    args = parser.parse_args()
-    if args.debug:
-        DEBUG = args.debug
-    else:
-        DEBUG = False
     os.system('cls' if os.name == 'nt' else 'clear')
     userRequest = validInput(input('--> '))
-    while (userRequest != "exit"):
-        response(userRequest, debug=DEBUG)
+    while userRequest != "exit":
+        response(userRequest, model1)
+        response(userRequest, model2)
+        response(userRequest, model3)
         userRequest = validInput(input('--> '))
     print("\033[94m Bye! See you next time. \033[0m\n")
+
 
 if __name__ == '__main__':
     main()

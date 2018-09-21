@@ -3,8 +3,8 @@
 # This file contains helper functions to return a bot response given a query
 # and a category
 
-from nltk import word_tokenize
 from nltk.tag import StanfordNERTagger
+from nltk.tokenize import word_tokenize
 import json
 import random
 
@@ -44,13 +44,17 @@ PRICE_CONVERSION = {'million': 1000000,
                     'k': 1000
                    }
 
+st = StanfordNERTagger('ner/english.muc.7class.distsim.crf.ser.gz', 'ner/stanford-ner.jar', encoding='utf-8')
+
+
 # load up intents json
 with open('src/data/intents.json') as f:
     intents = json.load(f)
 
+
 # go to correct conversational flow submethod
 def conversationFlow(category, userRequest, debug):
-    word_tokens = word_tokenize(userRequest)
+    return st.tag(word_tokenize(userRequest))
     if category == 'balance':
         botResponse = balanceFlow(word_tokens, debug)
     elif category == 'budgeting':
@@ -58,6 +62,7 @@ def conversationFlow(category, userRequest, debug):
     elif category == 'housing':
         botResponse = housingFlow(word_tokens, debug)
     return botResponse
+
 
 # if a balance question, obtain bank and account, and then fetch balance from dict if available
 def balanceFlow(word_tokens, debug):
@@ -74,6 +79,7 @@ def balanceFlow(word_tokens, debug):
     else:
         return intents['categorySet'][0]['responseSet'][0]['balance'].format(bank, account, BANK_ACCOUNTS[bank][account]['balance'])
 
+
 # Function containing the budget response
 def budgetingFlow(word_tokens):
     return (intents['categorySet'][1]['responseSet'][0] +
@@ -83,6 +89,7 @@ def budgetingFlow(word_tokens):
            "shopping: {}/mo\n".format(PERSONAL_EQUITY['shopping']) +
            "dining: {}/mo\n".format(PERSONAL_EQUITY['dining']) +
            "Remaining budget: {}/mo! (Try to put this into your savings account)".format(sum(PERSONAL_EQUITY.values())))
+
 
 # Function containing house affordability flow
 def housingFlow(word_tokens, debug):
@@ -100,6 +107,7 @@ def housingFlow(word_tokens, debug):
 
     return response
 
+
 # Helper function using NER model to obtain Bank name from query
 def getBank(word_tokens, debug):
     bank = ""
@@ -115,6 +123,7 @@ def getBank(word_tokens, debug):
 
     return bank
 
+
 # Helper function to extract account type from user query
 def getAccount(word_tokens):
     if 'checking' in word_tokens:
@@ -123,6 +132,8 @@ def getAccount(word_tokens):
         return 'savings'
     else:
         return ''
+
+
 # Helper function using NER model to obtain price of house from query
 def getPrice(word_tokens, debug):
     price = []
@@ -150,6 +161,7 @@ def getPrice(word_tokens, debug):
             housePrice = float(item)
 
     return housePrice * multiplier
+
 
 # Default answers if the query does not fit any of the above 3 categories
 def unknownFlow():
