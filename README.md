@@ -18,11 +18,8 @@ crib?", etc)
 
 1. Clone the directory to your local computer
 2. Run `pip3 install -r requirements.txt`
-3. To simply use the chatbot, run `python3 src/chatbot.py`
-    * Optional bool argument `--debug` (default False)
-    * To exit, simply type `exit`, or press **Cmd-C**
-4. To train the NER models, run `python3 src/train____NER.py`
-5. To train the DNN model for categorization, run `python3 src/trainModel.py`
+3. To train the chatbot, run `python3 src/pretrainWV.py`. This will create 3 keras models based on a word2vec embedding layer pre-trained on Google News articles.
+4. To deploy and use the actual chatbot, run `python3/chatbot.py`. Entering a request will retrieve responses from all 3 models. [WIP] Use combination of model outputs to make final decision, as each has strengths/weaknesses.
 
 ## Demo
 
