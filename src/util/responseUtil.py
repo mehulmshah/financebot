@@ -44,83 +44,53 @@ PRICE_CONVERSION = {'million': 1000000,
                     'k': 1000
                    }
 
-st = StanfordNERTagger('ner/english.muc.7class.distsim.crf.ser.gz', 'ner/stanford-ner.jar', encoding='utf-8')
+st = StanfordNERTagger('../ner/english.muc.7class.distsim.crf.ser.gz', '../ner/stanford-ner.jar', encoding='utf-8')
 
 
 # load up intents json
-with open('src/data/intents.json') as f:
+with open('data/intents.json') as f:
     intents = json.load(f)
 
 
 # go to correct conversational flow submethod
-def conversationFlow(category, userRequest, debug):
-    return st.tag(word_tokenize(userRequest))
+def conversationFlow(category, userRequest):
+    word_tokens = word_tokenize(userRequest)
     if category == 'balance':
-        botResponse = balanceFlow(word_tokens, debug)
+        botResponse = balanceFlow(word_tokens)
     elif category == 'budgeting':
         botResponse = budgetingFlow(word_tokens)
-    elif category == 'housing':
-        botResponse = housingFlow(word_tokens, debug)
+    else:
+        botResponse = housingFlow(word_tokens)
     return botResponse
 
 
 # if a balance question, obtain bank and account, and then fetch balance from dict if available
-def balanceFlow(word_tokens, debug):
-    bank = getBank(word_tokens, debug)
+def balanceFlow(word_tokens):
+    bank = getBank(word_tokens)
     account = getAccount(word_tokens)
 
     while account != 'checking' and account != 'savings':
-        account = getAccount(input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichAccount'] + '\033[0m\n--> ').split())
+        account = getAccount(input('\033[94m' + "Can you specify an account please? (checking or savings)" + '\033[0m\n--> ').split())
     while not bank:
-        bank = getBank(input('\033[94m' + intents['categorySet'][0]['responseSet'][0]['whichBank'] + '\033[0m\n--> ').split(),debug)
+        bank = getBank(input('\033[94m' + "Can you specify a bank please? + "'\033[0m\n--> ').split())
 
     if bank == 'Chase' and account == 'checking':
         return "You don't have a checking account with Chase."
     else:
-        return intents['categorySet'][0]['responseSet'][0]['balance'].format(bank, account, BANK_ACCOUNTS[bank][account]['balance'])
-
-
-# Function containing the budget response
-def budgetingFlow(word_tokens):
-    return (intents['categorySet'][1]['responseSet'][0] +
-           "income: +{}/mo\n".format(PERSONAL_EQUITY['income']) +
-           "rent: {}/mo\n".format(PERSONAL_EQUITY['rent']) +
-           "utilities and groceries: {}/mo\n".format(PERSONAL_EQUITY['utilGroceries']) +
-           "shopping: {}/mo\n".format(PERSONAL_EQUITY['shopping']) +
-           "dining: {}/mo\n".format(PERSONAL_EQUITY['dining']) +
-           "Remaining budget: {}/mo! (Try to put this into your savings account)".format(sum(PERSONAL_EQUITY.values())))
-
-
-# Function containing house affordability flow
-def housingFlow(word_tokens, debug):
-    housePrice = getPrice(word_tokens, debug)
-    if not housePrice:
-        housePrice = int(input("I'm sorry, I didn't detect a price... how much does your dream place cost? ").replace('$',''))
-
-    if housePrice < MAX_AFFORDABLE_PRICE:
-        response = intents['categorySet'][2]['responseSet'][0]['yes']
-        response += " You can put a 20% downpayment of ${}.".format(int(.2*housePrice))
-    else:
-        response = intents['categorySet'][2]['responseSet'][0]['no']
-        response += " A ${} home will require a 20% downpayment of ${}.".format(int(housePrice), int(.2*housePrice))
-        response += " At your current rate of savings ($500/mo), you can afford the downpayment in {} years!".format(int((.2*housePrice - 157000)/(500*12)))
-
-    return response
+        return "Your {} {} account balance is {}".format(bank, account, BANK_ACCOUNTS[bank][account]['balance'])
 
 
 # Helper function using NER model to obtain Bank name from query
-def getBank(word_tokens, debug):
+def getBank(word_tokens):
     bank = ""
-    st = StanfordNERTagger('ner/bank-ner-model.ser.gz', 'ner/stanford-ner.jar')
-    tagged_words = st.tag(word_tokens)
-    if debug:
-        print(tagged_words)
+    bank_st = StanfordNERTagger('../ner/bank-ner-model.ser.gz', '../ner/stanford-ner.jar')
+    tagged_words = bank_st.tag(word_tokens)
+    print(tagged_words)
     for tag in tagged_words:
         if 'C-ORG' in tag:
             bank = 'Chase'
         elif 'B-ORG' in tag:
             bank = 'BoA'
-
     return bank
 
 
@@ -134,33 +104,53 @@ def getAccount(word_tokens):
         return ''
 
 
-# Helper function using NER model to obtain price of house from query
-def getPrice(word_tokens, debug):
-    price = []
-    multiplier = 1
-    housePrice = 0
+# Function containing the budget response
+def budgetingFlow(word_tokens):
+    return ("Your necessities + discretionary budget:\n" +
+           "income: +{}/mo\n".format(PERSONAL_EQUITY['income']) +
+           "rent: {}/mo\n".format(PERSONAL_EQUITY['rent']) +
+           "utilities and groceries: {}/mo\n".format(PERSONAL_EQUITY['utilGroceries']) +
+           "shopping: {}/mo\n".format(PERSONAL_EQUITY['shopping']) +
+           "dining: {}/mo\n".format(PERSONAL_EQUITY['dining']) +
+           "Remaining budget: {}/mo! (Try to put this into your savings account)".format(sum(PERSONAL_EQUITY.values())))
 
-    st = StanfordNERTagger('ner/price-ner-model.ser.gz', 'ner/stanford-ner.jar')
+
+# Function containing house affordability flow
+def housingFlow(word_tokens):
+    housePrice = getPrice(word_tokens)
+    if not housePrice:
+        housePrice = getPrice(input("How much is the place?").split())
+
+    if housePrice < MAX_AFFORDABLE_PRICE:
+        response = "You definitely can!"
+        response += " You can put a 20% downpayment of ${}.".format(int(.2*housePrice))
+    else:
+        response = "Unfortunately, I don't think that's a good idea."
+        response += " A ${} home will require a 20% downpayment of ${}.".format(int(housePrice), int(.2*housePrice))
+        response += " At your current rate of savings ($500/mo), you can afford the downpayment in {} years!".format(int((.2*housePrice - 157000)/(500*12)))
+
+    return response
+
+
+# Helper function using NER model to obtain price of house from query
+def getPrice(word_tokens):
+    price = []
     tagged_words = st.tag(word_tokens)
     for tag in tagged_words:
-        if 'B-PRICE' in tag:
+        if 'MONEY' in tag:
             price.append(tag[0])
 
-    if debug:
-        print(price)
-
-    for item in price:
-        item = item.lower()
-        if '$' in item:
-            item = item.replace('$','')
-        for key in PRICE_CONVERSION:
-            if key in item:
-                multiplier = PRICE_CONVERSION[key]
-                item = item.replace(key,'')
-        if item.replace('.','',1).isdigit():
-            housePrice = float(item)
-
-    return housePrice * multiplier
+    print("Price:", price)
+    if len(price) == 0:
+        return None
+    else:
+        amt = price[1]
+        if 'M' in amt:
+            return float(price[1].replace('M', ''))*1000000
+        if 'K' in amt:
+            return float(price[1].replace('K', ''))*1000
+        else:
+            return float(price[1])
 
 
 # Default answers if the query does not fit any of the above 3 categories

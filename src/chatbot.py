@@ -32,7 +32,7 @@ def classify(sentence, the_model):
     print("-" * 10)
     class_name = category_reverse_index[the_model.predict_classes(pad_seq, verbose=0)[0]]
     if max(probabilities) > THRESHOLD:
-        print("Predicted category: ", className)
+        print("Predicted category: ", class_name)
     else:
         class_name = "unknown"
         print("Predicted category: Unknown")
