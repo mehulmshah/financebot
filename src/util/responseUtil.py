@@ -143,15 +143,20 @@ def getPrice(word_tokens):
     print("Price:", price)
     if len(price) == 0:
         return None
-    else:
-        amt = price[1]
-        if 'M' in amt:
-            return float(price[1].replace('M', ''))*1000000
-        if 'K' in amt:
-            return float(price[1].replace('K', ''))*1000
+    elif len(price) == 2:
+        amt = price[1].lower()
+        if 'm' in amt:
+            return float(amt.replace('m', ''))*1000000
+        if 'k' in amt:
+            return float(amt.replace('k', ''))*1000
         else:
-            return float(price[1])
-
+            return float(amt)
+    elif len(price) == 3:
+        amt = price[1]
+        if price[2] in PRICE_CONVERSION:
+            return amt*PRICE_CONVERSION[price[2]]
+        else:
+            return None
 
 # Default answers if the query does not fit any of the above 3 categories
 def unknownFlow():
