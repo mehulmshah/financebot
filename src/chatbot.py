@@ -4,120 +4,74 @@
 # is loaded and functionality of the chatbot is set. Then the user can converse
 # with the chatbot.
 
-import nltk
-from nltk.stem.lancaster import LancasterStemmer
 from util.responseUtil import conversationFlow, unknownFlow
-import speech_recognition as sr
-import numpy as np
-import tflearn
-import tensorflow as tf
-import random
-import json
+from keras.preprocessing.sequence import pad_sequences
+from keras.models import load_model
+import os
 import pickle
-import argparse
 
-# init objects and load in training data
-stemmer = LancasterStemmer()
-r = sr.Recognizer()
-data = pickle.load(open('src/data/training_data','rb'))
-words = data['words']
-categories = data['categories']
-train_x = data['train_x']
-train_y = data['train_y']
 
-# confidence level needed to categorize request
-ERROR_THRESHOLD = 0.65
+category_index = {"balance": 0, "budgeting": 1, "housing": 2}
+category_reverse_index = dict((y, x) for (x, y) in category_index.items())
 
-# import intents file
-with open('src/data/conversation.json') as f:
-    intents = json.load(f)
+THRESHOLD = 0.80
+MAX_SEQUENCE_LENGTH = 20
 
-# load up model from logs for prediction
-net = tflearn.input_data(shape=[None, len(train_x[0])])
-net = tflearn.fully_connected(net, 8)
-net = tflearn.dropout(net, 0.5)
-net = tflearn.fully_connected(net, len(train_y[0]), activation='softmax')
-net = tflearn.regression(net, optimizer='adam', loss='categorical_crossentropy')
-model = tflearn.DNN(net, tensorboard_dir='logs')
-model.load('logs/model')
+model1 = load_model('../logs/model1.h5')
+model2 = load_model('../logs/model2.h5')
+model3 = load_model('../logs/model3.h5')
+tokenDict = pickle.load(open('data/tokenizer', 'rb'))
+tokenizer = tokenDict['tokenizer']
 
-# given a query, return an array of sentence in bag of words format
-def bagOfWords(sentence, words, debug=False):
-    # tokenize the pattern
-    tokenized = nltk.word_tokenize(sentence)
-    [stemmer.stem(word.lower()) for word in tokenized]
-    # bag of words
-    bag = [0]*len(words)
-    for s in tokenized:
-        for i,w in enumerate(words):
-            if w == s:
-                bag[i] = 1
-                if debug:
-                    print ("found in: %s" % w)
-    return(np.array(bag))
 
-# use DNN model to predict category for a query and return highest prob if above
-# ERROR_THRESHOLD
-def classify(sentence, debug=False):
-    results = model.predict([bagOfWords(sentence, words)])[0]
-    if debug:
-        print("results: {}".format(list(zip(categories, results))))
-    results = [[i,r] for i,r in enumerate(results) if r>ERROR_THRESHOLD]
-    results.sort(key=lambda x: x[1])
-    return_list = []
-    if results:
-        return_list.append((categories[results[-1][0]], results[-1][1]))
-    # return tuple of intent and probability
-    return return_list
-
-# classify a request, and then send it to responseUtil to obtain appropriate
-# response
-def response(sentence, debug):
-    results = classify(sentence,debug)
-    if results:
-        for cat in intents['categorySet']:
-            if cat['category'] == results[0][0]:
-                if cat['category'] == 'balance' or cat['category'] == 'budgeting' or cat['category'] == 'housing':
-                    botResponse = conversationFlow(cat['category'], sentence, debug)
-                else:
-                    botResponse = random.choice(cat['responseSet'])
+def classify(sentence, the_model):
+    seq = tokenizer.texts_to_sequences([sentence])
+    pad_seq = pad_sequences(seq, maxlen=MAX_SEQUENCE_LENGTH)
+    probabilities = the_model.predict(pad_seq, verbose=0)
+    probabilities = probabilities[0]
+    print("-" * 10)
+    class_name = category_reverse_index[the_model.predict_classes(pad_seq, verbose=0)[0]]
+    if max(probabilities) > THRESHOLD:
+        print("Predicted category: ", class_name)
     else:
-        botResponse = unknownFlow()
+        class_name = "unknown"
+        print("Predicted category: Unknown")
+    print("-" * 10)
+    probabilities = the_model.predict(pad_seq, verbose=0)
+    probabilities = probabilities[0]
+    print("Balance: {}\nBudgeting: {}\nHousing: {}\n".format(probabilities[category_index["balance"]],
+                                                             probabilities[category_index["budgeting"]],
+                                                             probabilities[category_index["housing"]]))
+    return class_name
 
+
+def response(sentence, the_model):
+    class_name = classify(sentence, the_model)
+
+    if class_name == "unknown":
+        botResponse = unknownFlow()
+    else:
+        botResponse = conversationFlow(class_name, sentence)
     return print('\033[94m' + botResponse + '\033[0m')
 
-# Check to see if user wishes to type or speak into mic to chat
-def getRequest(isTyping):
-    if isTyping:
-        return input('--> ')
-    else:
-        with sr.Microphone() as source:
-            print("Say something --> ")
-            audio = r.listen(source)
 
-        try:
-            print("--> " + r.recognize_google(audio))
-        except sr.UnknownValueError:
-            print("\033[94m I could not understand audio... please quit and try again via chat \033[0m")
-        return r.recognize_google(audio)
+def validInput(request):
+    while not (request and request.strip()):
+        request = input('--> ')
+    return request
+
 
 # Load up chatbot and stay alive until user quits program or error is encountered
 def main():
-    parser = argparse.ArgumentParser(description='Optional app description')
-    parser.add_argument('--debug', type=bool, help='Toggle debug mode (default False)')
-    args = parser.parse_args()
-    if args.debug:
-        DEBUG = args.debug
-    else:
-        DEBUG = False
-
-    isTyping = int(input("\nPress 0 to talk via voice, 1 to talk via chat: "))
-    userRequest = getRequest(isTyping)
-    while (userRequest != "exit"):
-        response(userRequest, debug=DEBUG)
-        userRequest = getRequest(isTyping)
-
+    os.system('cls' if os.name == 'nt' else 'clear')
+    userRequest = validInput(input('--> '))
+    while userRequest != "exit":
+        response(userRequest, model1)
+        response(userRequest, model2)
+        response(userRequest, model3)
+        userRequest = validInput(input('--> '))
     print("\033[94m Bye! See you next time. \033[0m\n")
+
 
 if __name__ == '__main__':
     main()

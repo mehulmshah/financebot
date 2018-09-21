@@ -6,3 +6,6 @@ H5py
 SpeechRecognition
 Praw
 Scipy
+Keras
+Pathlib
+Gensim

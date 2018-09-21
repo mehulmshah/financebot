@@ -1,0 +1,20 @@
+{"categorySet":
+	[
+		{"name": "balance",
+		 "trainData": [],
+	 	 "responseSet": []
+		},
+		{"name": "budgeting",
+		 "trainData": [],
+	 	 "responseSet": []
+		},
+		{"name": "housing",
+		 "trainData": [],
+	 	 "responseSet": []
+	 	},
+		{"name": "unknown",
+		 "trainData": [],
+	 	 "responseSet": []
+	 	}
+	]
+}
