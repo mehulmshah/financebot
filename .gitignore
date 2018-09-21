@@ -5,3 +5,4 @@ README*
 requirements.txt
 runFinancebot.sh
 __pycache__
+.idea/*
